@@ -6,6 +6,9 @@ Gem::Specification.new do |s|
   s.description = "A simple chess move validator"
   s.authors     = ["Tyler Porter"]
   s.email       = 'tyler.b.porter@gmail.com'
-  s.files       = ["lib/chessmate.rb"]
-  s.license       = 'MIT'
+	s.files       = ['lib/chessmate.rb',
+									 'lib/helpers/notation_parser.rb']
+	s.license     = 'MIT'
+	s.homepage    = 'https://rubygems.org/gems/chessmate'
+	s.metadata    = { "source_code_uri" => "https://github.com/pawptart/chessmate" }
 end
