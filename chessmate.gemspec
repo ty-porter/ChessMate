@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.email       = 'tyler.b.porter@gmail.com'
 	s.files       = ['lib/chessmate.rb',
 									 'lib/helpers/notation_parser.rb']
+	spec.add_development_dependency "rspec"
 	s.license     = 'MIT'
 	s.homepage    = 'https://rubygems.org/gems/chessmate'
 	s.metadata    = { "source_code_uri" => "https://github.com/pawptart/chessmate" }
