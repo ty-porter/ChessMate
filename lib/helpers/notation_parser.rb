@@ -1,10 +1,13 @@
-LETTERS = {"a" => 0, "b" => 1, "c" =>  2, "d" => 3, "e" =>  4, "f" =>  5, "g" =>  6, "h" =>  7}
-
 module NotationParser
-	def NotationParser.parse_notation(square)
-		ltr = LETTERS[square[0].downcase()]
-		num = square[1].to_i - 1
+	def self.parse_notation(square)
+		col = square[0].downcase().ord - 97 
+		row = 7 - ( square[1].to_i - 1 )
 
-		[ltr, num]
+		# Check if within the bounds of the board
+		if col >= 0 && col < 8 && row >= 0 && row < 8
+			[row,col]
+		else
+			-1
+		end
 	end
 end
