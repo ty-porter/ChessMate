@@ -7,7 +7,7 @@ class ChessMate
 	require 'pieces/queen'
 	require 'pieces/king'
 	
-	attr_accessor :board
+	attr_reader :board
 
 	def initialize(board=nil,turn=nil)
 		if board.nil?
@@ -66,17 +66,17 @@ class ChessMate
 		valid_move = nil
 		case piece_type
 		when "P"
-			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos)
+			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos,@board)
 		when "R"
-			valid_move = Rook.move_is_valid?(orig_pos,dest_pos)
+			valid_move = Rook.move_is_valid?(orig_pos,dest_pos,@board)
 		when "B"
-			valid_move = Bishop.move_is_valid?(orig_pos,dest_pos)
+			valid_move = Bishop.move_is_valid?(orig_pos,dest_pos,@board)
 		when "N"
-			valid_move = Knight.move_is_valid?(orig_pos,dest_pos)
+			valid_move = Knight.move_is_valid?(orig_pos,dest_pos,@board)
 		when "Q"
-			valid_move = Queen.move_is_valid?(orig_pos,dest_pos)
+			valid_move = Queen.move_is_valid?(orig_pos,dest_pos,@board)
 		when "K"
-			valid_move = King.move_is_valid?(orig_pos,dest_pos)
+			valid_move = King.move_is_valid?(orig_pos,dest_pos,@board)
 		else
 			valid_move = false
 		end

@@ -94,6 +94,37 @@ describe ChessMate do
             it "should return false if the pawn move is invalid" do
                 expect(@chess.move('c2', 'd3')).to eql(false)
             end
+
+            it "should update the board if pawn's first move is 2 squares" do
+                chess = ChessMate.new
+                chess.move('c2', 'c4')
+                expect(chess.board).to eql(
+                    [
+                    ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                    ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, "WP", nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ['WP', 'WP', nil, 'WP', 'WP', 'WP', 'WP', 'WP'],
+                    ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']
+                    ]
+                )
+                chess = ChessMate.new
+                chess.move('b7', 'b5')
+                expect(chess.board).to eql(
+                    [
+                    ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                    ['BP', nil, 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, 'BP', nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+                    ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']
+                    ]
+                )
+            end
         end
         
         context "for rooks" do
