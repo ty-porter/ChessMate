@@ -7,7 +7,7 @@ module NotationParser
 		if col >= 0 && col < 8 && row >= 0 && row < 8
 			[row,col]
 		else
-			-1
+			return nil
 		end
 	end
 end

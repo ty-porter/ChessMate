@@ -1,5 +1,8 @@
 class ChessMate
 	require 'helpers/notation_parser'
+	require 'pieces/piece'
+	require 'pieces/pawn'
+	
 	attr_accessor :board
 
 	def initialize(board=nil,turn=nil)
@@ -44,6 +47,26 @@ class ChessMate
 		orig_pos = NotationParser.parse_notation(orig)
 		dest_pos = NotationParser.parse_notation(dest)
 
-		self.update(orig_pos, dest_pos)
+		# Return false for malformed postition input
+		if orig_pos.nil? || dest_pos.nil?
+			return false
+		end
+
+		# Get the piece type from the board 
+		orig_y = orig_pos[0]
+		orig_x = orig_pos[1]
+		piece_type = @board[orig_y][orig_x][1]
+
+		# Check valid move depending on piece
+		# TODO: Add more pieces!
+		valid_move = nil
+		case piece_type
+		when "P"
+			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos)
+		else
+			valid_move = false
+		end
+
+		valid_move ? self.update(orig_pos, dest_pos) : false
 	end
 end

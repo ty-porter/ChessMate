@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "A simple chess move validator"
   s.authors     = ["Tyler Porter"]
   s.email       = 'tyler.b.porter@gmail.com'
-  s.files       = Dir['**/*'].keep_if { |file| File.file?(file) }
+  s.files       = Dir['**/*'].keep_if { |file| !file.match('gem') && File.file?(file) }
   s.add_development_dependency "rspec"
   s.license     = 'MIT'
   s.homepage    = 'https://rubygems.org/gems/chessmate'
