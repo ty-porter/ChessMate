@@ -1,7 +1,11 @@
 class ChessMate
 	require 'helpers/notation_parser'
-	require 'pieces/piece'
 	require 'pieces/pawn'
+	require 'pieces/rook'
+	require 'pieces/bishop'
+	require 'pieces/knight'
+	require 'pieces/queen'
+	require 'pieces/king'
 	
 	attr_accessor :board
 
@@ -63,10 +67,25 @@ class ChessMate
 		case piece_type
 		when "P"
 			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos)
+		when "R"
+			valid_move = Rook.move_is_valid?(orig_pos,dest_pos)
+		when "B"
+			valid_move = Bishop.move_is_valid?(orig_pos,dest_pos)
+		when "N"
+			valid_move = Knight.move_is_valid?(orig_pos,dest_pos)
+		when "Q"
+			valid_move = Queen.move_is_valid?(orig_pos,dest_pos)
+		when "K"
+			valid_move = King.move_is_valid?(orig_pos,dest_pos)
 		else
 			valid_move = false
 		end
 
-		valid_move ? self.update(orig_pos, dest_pos) : false
+		if valid_move 
+			self.update(orig_pos, dest_pos)
+		else
+			return false
+		end
+
 	end
 end
