@@ -74,6 +74,24 @@ describe ChessMate do
             expect(@chess.move('zz', 'c3')).to eql(false)
         end
 
+        it "should generally return false and not update the board if the path is blocked" do
+            expect(@chess.move('d1', 'a1')).to eql(false)
+            expect(@chess.move('d1', 'd8')).to eql(false)
+            expect(@chess.move('d1', 'b3')).to eql(false)
+            expect(@chess.board).to eql(
+                [
+                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+                ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']
+                ]
+            )
+        end
+
         context "for pawns" do
             it "should update the board if pawn move is valid" do
                 @chess.move('c2', 'c3')
