@@ -7,7 +7,7 @@ class ChessMate
 	require 'pieces/queen'
 	require 'pieces/king'
 	
-	attr_reader :board
+	attr_reader :board, :turn
 
 	def initialize(board=nil,turn=nil)
 		if board.nil?
@@ -37,6 +37,10 @@ class ChessMate
 		@board
 	end
 
+	def turn
+		@turn
+	end
+
 	def update(orig, dest=nil)
 		orig_y = orig[0]
 		orig_x = orig[1]
@@ -45,6 +49,7 @@ class ChessMate
 		piece_type = @board[orig_y][orig_x]
 		@board[orig_y][orig_x] = nil
 		@board[dest_y][dest_x] = piece_type
+		@turn += 1
 	end
 
 	def move(orig, dest)

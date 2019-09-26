@@ -68,4 +68,14 @@ describe Piece do
 			expect(piece.class.is_obstructed?([7,3],[4,0],board)).to eql(false)
 		end
 	end
+
+	describe "is_capturable? method" do
+		it "should return true if pieces are of opposite colors" do
+			board = Array.new(8) { Array.new(8,nil) }
+			board[5][5] = "WP"
+      board[4][4] = "BP"
+			piece = Piece.new
+			expect(piece.class.is_capturable?([5,5],[4,4],board)).to eql(true)
+		end
+	end
 end

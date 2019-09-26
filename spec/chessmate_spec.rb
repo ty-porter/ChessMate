@@ -46,6 +46,19 @@ describe ChessMate do
                 ]
             )
         end
+
+        it "should update the turn on a successful update" do
+            turn = @chess.turn
+            @chess.update([6,0], [5,0])
+            expect(@chess.turn).to eql(turn + 1)
+        end
+    end
+
+    describe "turn method" do
+        it "should show the current turn" do
+            chess = ChessMate.new
+            expect(chess.turn).to eql(1)
+        end
     end
 
     describe "move method" do
@@ -140,6 +153,26 @@ describe ChessMate do
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
                     ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']
+                    ]
+                )
+            end
+
+            it "should allow for capturing diagonally" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[5][5] = "WP"
+                board[4][4] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('f3', 'e4')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, 'WP', nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
                     ]
                 )
             end
