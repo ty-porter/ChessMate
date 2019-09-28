@@ -157,6 +157,26 @@ describe ChessMate do
                 )
             end
 
+            it "should not allow a pawn to move 2 spaces if the 1st space is occupied" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[6][0] = "WP"
+                board[5][0] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('a2', 'a4')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ['BP', nil, nil, nil, nil, nil, nil, nil],
+                    ['WP', nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
             it "should allow for capturing diagonally" do 
                 board = Array.new(8) { Array.new(8,nil) }
                 board[5][5] = "WP"
@@ -191,6 +211,26 @@ describe ChessMate do
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, 'WP', nil, nil, nil],
                     [nil, nil, nil, nil, nil, 'BP', nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow pawns to capture pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[4][4] = "WP"
+                board[5][5] = "WP"
+                chess = ChessMate.new(board)
+                chess.move('f3', 'e4')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, 'WP', nil, nil, nil],
+                    [nil, nil, nil, nil, nil, 'WP', nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     ]
@@ -263,19 +303,59 @@ describe ChessMate do
                 chess = ChessMate.new(board)
                 expect(chess.move('a1','g8')).to eql(false)
             end
+
+            it "should allow capturing pieces of opposite color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][0] = "WR"
+                board[7][7] = "BR"
+                chess = ChessMate.new(board)
+                chess.move('a1', 'h1')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, "WR"],
+                    ]
+                )
+            end
+
+            it "should not allow capturing pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][0] = "WR"
+                board[7][7] = "WR"
+                chess = ChessMate.new(board)
+                chess.move('a1', 'h1')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ["WR", nil, nil, nil, nil, nil, nil, "WR"],
+                    ]
+                )
+            end
         end
 
         context "for bishops" do
             it "should update the board if the bishop moves diagonally" do
                 board = Array.new(8) { Array.new(8,nil) }
-                board[7][1] = "WB"
+                board[7][2] = "WB"
                 chess = ChessMate.new(board)
-                chess.move('b1', 'h7')
+                chess.move('c1', 'h6')
                 expect(chess.board).to eql(
                     [
                     [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, 'WB'],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, 'WB'],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -287,10 +367,52 @@ describe ChessMate do
 
             it "should return false for a move that is not diagonal" do
                 board = Array.new(8) { Array.new(8,nil) }
-                board[7][1] = "WB"
+                board[7][2] = "WB"
                 chess = ChessMate.new(board)
-                expect(chess.move('b1','b8')).to eql(false)
+                expect(chess.move('c1','c8')).to eql(false)
+                expect(chess.move('c1','h7')).to eql(false)
+                expect(chess.move('c1','h8')).to eql(false)
                 
+            end
+
+            it "should allow capturing pieces of opposite color" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][2] = "WB"
+                board[2][7] = "BB"
+                chess = ChessMate.new(board)
+                chess.move('c1', 'h6')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, 'WB'],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow capturing pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][2] = "WB"
+                board[2][7] = "WB"
+                chess = ChessMate.new(board)
+                chess.move('c1', 'h6')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, 'WB'],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, "WB", nil, nil, nil, nil, nil],
+                    ]
+                )
             end
         end
 
@@ -338,6 +460,46 @@ describe ChessMate do
                 board[7][2] = "WN"
                 chess = ChessMate.new(board)
                 expect(chess.move('c1','c8')).to eql(false)
+            end
+
+            it "should allow capturing pieces of opposite color" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][2] = "WN"
+                board[5][3] = "BN"
+                chess = ChessMate.new(board)
+                chess.move('c1', 'd3')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, 'WN', nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow capturing pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][2] = "WN"
+                board[5][3] = "WN"
+                chess = ChessMate.new(board)
+                chess.move('c1', 'd3')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, 'WN', nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, 'WN', nil, nil, nil, nil, nil],
+                    ]
+                )
             end
         end
 
@@ -405,6 +567,46 @@ describe ChessMate do
                 chess = ChessMate.new(board)
                 expect(chess.move('d1', 'h8')).to eql(false)
             end
+
+            it "should allow capturing pieces of opposite color" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][3] = "WQ"
+                board[7][7] = "BQ"
+                chess = ChessMate.new(board)
+                chess.move('d1', 'h1')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, "WQ"],
+                    ]
+                )
+            end
+
+            it "should not allow capturing pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][3] = "WQ"
+                board[7][7] = "WQ"
+                chess = ChessMate.new(board)
+                chess.move('d1', 'h1')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, "WQ", nil, nil, nil, "WQ"],
+                    ]
+                )
+            end
         end
 
         context "for kings" do
@@ -470,6 +672,46 @@ describe ChessMate do
                 board[7][4] = "WK"
                 chess = ChessMate.new(board)
                 expect(chess.move('e1', 'h8')).to eql(false)
+            end
+
+            it "should allow capturing pieces of opposite color" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][4] = "WK"
+                board[6][4] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('e1', 'e2')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, "WK", nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow capturing pieces of same color" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[7][4] = "WK"
+                board[6][4] = "WP"
+                chess = ChessMate.new(board)
+                chess.move('e1', 'e2')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, "WP", nil, nil, nil],
+                    [nil, nil, nil, nil, "WK", nil, nil, nil],
+                    ]
+                )
             end
         end
     end

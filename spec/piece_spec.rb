@@ -78,4 +78,19 @@ describe Piece do
 			expect(piece.class.is_capturable?([5,5],[4,4],board)).to eql(true)
 		end
 	end
+
+	describe "destination_occupied? method" do 
+		it "should return true if a piece occupies the destination" do
+			board = Array.new(8) { Array.new(8,nil) }
+			board[5][5] = "WP"
+			piece = Piece.new
+			expect(piece.class.destination_occupied?([5,5],board)).to eql(true)
+		end
+
+		it "should return false if a piece does not occupy the destination" do
+			board = Array.new(8) { Array.new(8,nil) }
+			piece = Piece.new
+			expect(piece.class.destination_occupied?([5,5],board)).to eql(false)
+		end
+	end
 end

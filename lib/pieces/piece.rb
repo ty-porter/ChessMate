@@ -66,4 +66,11 @@ class Piece
 		orig_piece_color != dest_piece_color
 
 	end
+
+	def self.destination_occupied?(dest, board)
+		dest_y = dest[0]
+		dest_x = dest[1]
+
+		!board[dest_y][dest_x].nil?
+	end
 end
