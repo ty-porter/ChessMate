@@ -176,6 +176,46 @@ describe ChessMate do
                     ]
                 )
             end
+
+            it "should not allow pawns to move backwards to capture" do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[4][4] = "WP"
+                board[5][5] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('e4', 'f3')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, 'WP', nil, nil, nil],
+                    [nil, nil, nil, nil, nil, 'BP', nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow pawns to move backwards in general" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[4][4] = "WP"
+                board[5][5] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('e4', 'e3')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, 'WP', nil, nil, nil],
+                    [nil, nil, nil, nil, nil, 'BP', nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
         end
         
         context "for rooks" do

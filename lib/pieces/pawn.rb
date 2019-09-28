@@ -14,13 +14,18 @@ class Pawn < Piece
 		elsif piece_color == "b"
 			direction = -1
 		else
-			puts "returning here"
 			return false
+		end
+
+		if self.is_capturable?(orig,dest,board) && 
+			 (orig_x - dest_x).abs == 1 && 
+			 (orig_y - dest_y) * direction == 1
+			return true
 		end
 
 		not_obstructed = !self.is_obstructed?(orig, dest, board)
 	
-		basic_move = ( (orig_y - dest_y).abs == 1 && orig_x == dest_x )
+		basic_move = ( (orig_y - dest_y) * direction == 1 && orig_x == dest_x )
 		move_double_on_first_turn = ( orig_y - dest_y == (2 * direction) ) && ( orig_x == dest_x )
 
 		move_double_on_first_turn && not_obstructed || basic_move
