@@ -7,7 +7,7 @@ class ChessMate
 	require 'pieces/queen'
 	require 'pieces/king'
 	
-	attr_reader :board, :turn
+	attr_reader :board, :turn, :in_check
 
 	def initialize(board=nil,turn=nil)
 		if board.nil?
@@ -31,6 +31,11 @@ class ChessMate
 		else
 			@turn = turn
 		end
+
+		@in_check = {
+			"white": false,
+			"black": false
+		}
 	end	
 
 	def update(orig, dest=nil)
@@ -46,7 +51,7 @@ class ChessMate
 
 	def in_check?(board=nil)
 		board = board.nil? ? @board : board
-		wk_coords, bk_coords = nil
+		wk_coords = bk_coords = nil
 
 		board.each_with_index do |row, y|
 			if row.include?("WK") 
@@ -58,7 +63,7 @@ class ChessMate
 		end
 
 		if wk_coords.nil? || bk_coords.nil?
-			return nil
+			return { "white": false, "black": false }
 		end
 
 		wk_pos = NotationParser.encode_notation(wk_coords)
@@ -82,10 +87,7 @@ class ChessMate
 			end
 		end
 
-		{
-			"white": white_in_check,
-			"black": black_in_check
-		}
+		{ "white": white_in_check, "black": black_in_check }
 		
 	end
 
@@ -101,7 +103,17 @@ class ChessMate
 		# Get the piece type from the board 
 		orig_y = orig_pos[0]
 		orig_x = orig_pos[1]
-		piece_type = @board[orig_y][orig_x][1]
+
+		piece = @board[orig_y][orig_x]
+		piece_type = piece[1]
+
+		if piece[0].downcase() == "w"
+			piece_color = :white
+		elsif piece[0].downcase() == "b"
+			piece_color = :black
+		else
+			piece_color = nil
+		end
 
 		# Check valid move depending on piece
 		# TODO: Add more pieces!
@@ -123,11 +135,15 @@ class ChessMate
 			valid_move = false
 		end
 
-		if valid_move && !test
+		if !test
+			@in_check = self.in_check?
+		end
+
+		if valid_move && !test && !@in_check[piece_color]
 			self.update(orig_pos, dest_pos)
 		end 
 
-		valid_move
+		valid_move && !@in_check[piece_color]
 
 	end
 end

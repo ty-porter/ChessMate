@@ -61,11 +61,34 @@ describe ChessMate do
         end
     end
 
+    describe "in_check method" do 
+        it "should return a hash of values values on game start" do
+            chess = ChessMate.new
+            expect(chess.in_check).to eql(
+                {
+                    "white": false,
+                    "black": false
+                }
+            )
+        end
+    end
+
     describe "in_check? method" do
         it "should return a hash value" do
             chess = ChessMate.new
             check = chess.in_check?
             expect(check.is_a? Hash).to eql(true)
+        end
+
+        it "should handle a malformed board by returning default value" do
+            board = Array.new(8) { Array.new(8,nil) }
+            chess = ChessMate.new(board)
+            expect(chess.in_check?).to eql(
+                {
+                    "white": false,
+                    "black": false
+                }
+            )
         end
 
         it "should should return false if neither king is in check" do
@@ -106,27 +129,6 @@ describe ChessMate do
             )
         end
 
-        it "DELETE THIS TEST" do 
-            board = Array.new(8) { Array.new(8,nil) }
-            board[7][4] = "WK"
-            board[7][3] = "WQ"
-            board[0][3] = "BK"
-            chess = ChessMate.new(board)
-            expect(chess.board).to eql(
-                [
-                    [nil, nil, nil, "BK", nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, nil, nil, nil, nil, nil],
-                    [nil, nil, nil, "WQ", 'WK', nil, nil, nil],
-                    ]
-            )
-            expect(chess.move('d1', 'd8', true)).to eql(true)
-        end
-
         it "should not update the board to test for king in check" do
             chess = ChessMate.new
             chess.in_check?
@@ -148,6 +150,35 @@ describe ChessMate do
     describe "move method" do
         before :each do
             @chess = ChessMate.new
+        end
+
+        it "should test that the king is not in check before moving" do 
+            puts "HERE"
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[6][0] = "WP"
+            board[0][4] = "BK"
+            board[1][4] = "BQ"
+            chess = ChessMate.new(board)
+            chess.move('a2', 'a3')
+            expect(chess.in_check?).to eql(
+                {
+                    "white": true,
+                    "black": false
+                }
+            )
+            expect(chess.board).to eql(
+                [
+                [nil, nil, nil, nil, "BK", nil, nil, nil],
+                [nil, nil, nil, nil, "BQ", nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                ["WP", nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, "WK", nil, nil, nil],
+                ]
+            )
         end
 
         it "should return false if the move is not within the bounds of the board" do
