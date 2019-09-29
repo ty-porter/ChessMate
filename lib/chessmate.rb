@@ -52,7 +52,52 @@ class ChessMate
 		@turn += 1
 	end
 
-	def move(orig, dest)
+	def in_check?(board=nil)
+		board = board.nil? ? @board : board
+		wk_coords, bk_coords = nil
+
+		board.each_with_index do |row, y|
+			if row.include?("WK") 
+				wk_coords = [y, row.index("WK")]
+			end
+			if row.include?("BK") 
+				bk_coords = [y, row.index("BK")]
+			end
+		end
+
+		if wk_coords.nil? || bk_coords.nil?
+			return nil
+		end
+
+		wk_pos = NotationParser.encode_notation(wk_coords)
+		bk_pos = NotationParser.encode_notation(bk_coords)
+
+		white_in_check = black_in_check = false
+		board.each_with_index do |row, y|
+			row.each_with_index do |col, x|
+				if !col.nil?
+					piece_pos = NotationParser.encode_notation([y,x])
+					if col[0] == "W"
+						if move(piece_pos, bk_pos, true)
+							black_in_check = true
+						end
+					elsif col[0] == "B"
+						if move(piece_pos, wk_pos, true)
+							white_in_check = true
+						end
+					end
+				end
+			end
+		end
+
+		{
+			"white": white_in_check,
+			"black": black_in_check
+		}
+		
+	end
+
+	def move(orig, dest, test=false)
 		orig_pos = NotationParser.parse_notation(orig)
 		dest_pos = NotationParser.parse_notation(dest)
 
@@ -86,11 +131,11 @@ class ChessMate
 			valid_move = false
 		end
 
-		if valid_move 
+		if valid_move && !test
 			self.update(orig_pos, dest_pos)
-		else
-			return false
-		end
+		end 
+
+		valid_move
 
 	end
 end
