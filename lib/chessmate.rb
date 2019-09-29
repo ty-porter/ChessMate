@@ -33,14 +33,6 @@ class ChessMate
 		end
 	end	
 
-	def board
-		@board
-	end
-
-	def turn
-		@turn
-	end
-
 	def update(orig, dest=nil)
 		orig_y = orig[0]
 		orig_x = orig[1]
