@@ -44,8 +44,11 @@ class ChessMate
 		dest_y = dest[0]
 		dest_x = dest[1]
 		piece_type = @board[orig_y][orig_x]
+
+		# Hacky way of doing this. Will fail for en passant and casling.
 		@board[orig_y][orig_x] = nil
 		@board[dest_y][dest_x] = piece_type
+
 		@turn += 1
 	end
 
@@ -95,12 +98,10 @@ class ChessMate
 		orig_pos = NotationParser.parse_notation(orig)
 		dest_pos = NotationParser.parse_notation(dest)
 
-		# Return false for malformed postition input
 		if orig_pos.nil? || dest_pos.nil?
 			return false
 		end
 
-		# Get the piece type from the board 
 		orig_y = orig_pos[0]
 		orig_x = orig_pos[1]
 
@@ -115,8 +116,6 @@ class ChessMate
 			piece_color = nil
 		end
 
-		# Check valid move depending on piece
-		# TODO: Add more pieces!
 		valid_move = nil
 		case piece_type
 		when "P"
@@ -137,13 +136,59 @@ class ChessMate
 
 		if !test
 			@in_check = self.in_check?
+			in_check_after_move = in_check_after_move?(orig_pos,dest_pos)
 		end
 
-		if valid_move && !test && !@in_check[piece_color]
+		if valid_move && !test && !@in_check[piece_color] && !in_check_after_move
 			self.update(orig_pos, dest_pos)
 		end 
 
-		valid_move && !@in_check[piece_color]
+		valid_move && !@in_check[piece_color] && !in_check_after_move
+	end
 
+	def in_check_after_move?(orig, dest)
+		test_board = @board.map(&:dup)
+		
+		orig_y = orig[0]
+		orig_x = orig[1]
+		dest_y = dest[0]
+		dest_x = dest[1]
+		piece = test_board[orig_y][orig_x]
+
+		# Hacky way of doing this. Will fail for en passant and casling.
+		test_board[orig_y][orig_x] = nil
+		test_board[dest_y][dest_x] = piece
+
+		piece_color = piece[0]
+		king = piece_color + "K"
+
+		king_coords = nil
+		test_board.each_with_index do |row, y|
+			if row.include?(king) 
+				king_coords = [y, row.index(king)]
+			end
+		end
+
+		if king_coords.nil?
+			return false
+		end
+
+		king_pos = NotationParser.encode_notation(king_coords)
+
+		in_check = false
+		test_board.each_with_index do |row, y|
+			row.each_with_index do |col, x|
+				if !col.nil?
+					piece_pos = NotationParser.encode_notation([y,x])
+					if col[0] != piece_color
+						if move(piece_pos, king_pos, true)
+							in_check = true
+						end
+					end
+				end
+			end
+		end
+
+		in_check
 	end
 end

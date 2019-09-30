@@ -153,7 +153,6 @@ describe ChessMate do
         end
 
         it "should test that the king is not in check before moving" do 
-            puts "HERE"
             board = Array.new(8) { Array.new(8,nil) }
             board[7][4] = "WK"
             board[6][0] = "WP"
@@ -176,6 +175,27 @@ describe ChessMate do
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 ["WP", nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, "WK", nil, nil, nil],
+                ]
+            )
+        end
+
+        it "should not let players move into check" do 
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[0][4] = "BK"
+            board[0][3] = "BQ"
+            chess = ChessMate.new(board)
+            chess.move('e1', 'd1')
+            expect(chess.board).to eql(
+                [
+                [nil, nil, nil, "BQ", "BK", nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, "WK", nil, nil, nil],
                 ]
             )
@@ -828,6 +848,33 @@ describe ChessMate do
                     ]
                 )
             end
+        end
+    end
+
+    describe "in_check_after_move? method" do
+        before :each do 
+            @board = Array.new(8) { Array.new(8,nil) }
+            @board[7][4] = "WK"
+            @board[0][4] = "BQ"
+            @board[0][3] = "BQ"
+            @chess = ChessMate.new(@board)
+        end
+        it "should return true if the moving color is in check after the move" do
+            expect(@chess.in_check_after_move?([7,4], [7,3])).to eql(true)
+        end
+
+        it "should return false if the moving color is not in check after the move" do
+            expect(@chess.in_check_after_move?([7,4], [7,5])).to eql(false)
+        end
+
+        it "should not update the actual game board to test" do
+            test_board = Array.new(8) { Array.new(8,nil) }
+            test_board[7][4] = "WK"
+            test_board[0][4] = "BQ"
+            test_board[0][3] = "BQ"
+            @chess.in_check_after_move?([7,4], [7,3])
+            expect(test_board.object_id).to_not eql(@board.object_id)
+            expect(test_board).to eql(@chess.board)
         end
     end
 end
