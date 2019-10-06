@@ -855,7 +855,7 @@ describe ChessMate do
         before :each do 
             @board = Array.new(8) { Array.new(8,nil) }
             @board[7][4] = "WK"
-            @board[0][4] = "BQ"
+            @board[0][4] = "BK"
             @board[0][3] = "BQ"
             @chess = ChessMate.new(@board)
         end
@@ -870,11 +870,85 @@ describe ChessMate do
         it "should not update the actual game board to test" do
             test_board = Array.new(8) { Array.new(8,nil) }
             test_board[7][4] = "WK"
-            test_board[0][4] = "BQ"
+            test_board[0][4] = "BK"
             test_board[0][3] = "BQ"
             @chess.in_check_after_move?([7,4], [7,3])
             expect(test_board.object_id).to_not eql(@board.object_id)
             expect(test_board).to eql(@chess.board)
+        end
+
+        it "should return true if the checking piece is captured, but still results in check" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[6][4] = "BQ"
+            board[3][4] = "BK"
+            board[4][4] = "BR"
+            chess = ChessMate.new(board)
+            expect(chess.in_check_after_move?([7,4], [6,4])).to eql(true)
+        end
+    end
+
+    describe "valid_moves? method" do 
+        it "should return true if there are valid moves" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[0][4] = "BK"
+            chess = ChessMate.new(board)
+            expect(chess.any_valid_moves?("W")).to eql(true)
+        end
+
+        it "should return false if there are no valid moves" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[6][4] = "BQ"
+            board[3][4] = "BK"
+            board[4][4] = "BR"
+            chess = ChessMate.new(board)
+            expect(chess.any_valid_moves?("W")).to eql(false)
+        end
+    end
+
+    describe "checkmate? method" do
+        it "should return true if no valid moves remain and currently in check" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[6][4] = "BQ"
+            board[3][4] = "BK"
+            board[4][4] = "BR"
+            chess = ChessMate.new(board)
+            expect(chess.checkmate?("W")).to eql(true)
+        end
+
+        it "should return false if there are valid moves" do
+            chess = ChessMate.new
+            expect(chess.checkmate?("W")).to eql(false)
+        end
+    end
+
+    describe "draw? method" do
+        it "should return true if no valid moves remain and currently not in check" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[5][3] = "BQ"
+            board[5][4] = "BK"
+            board[4][5] = "BR"
+            chess = ChessMate.new(board)
+            expect(chess.draw?("W")).to eql(true)
+        end
+
+        it "should return false if there are valid moves" do
+            chess = ChessMate.new
+            expect(chess.checkmate?("W")).to eql(false)
+        end
+
+        it "should return false if checkmated" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][4] = "WK"
+            board[6][3] = "BQ"
+            board[5][4] = "BK"
+            board[4][5] = "BR"
+            chess = ChessMate.new(board)
+            expect(chess.draw?("W")).to eql(false)
         end
     end
 end

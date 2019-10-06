@@ -45,7 +45,7 @@ class ChessMate
 		dest_x = dest[1]
 		piece_type = @board[orig_y][orig_x]
 
-		# Hacky way of doing this. Will fail for en passant and casling.
+		# Hacky way of doing this. Will fail for en passant and castling.
 		@board[orig_y][orig_x] = nil
 		@board[dest_y][dest_x] = piece_type
 
@@ -94,7 +94,7 @@ class ChessMate
 		
 	end
 
-	def move(orig, dest, test=false)
+	def move(orig, dest, test=false, test_board=nil)
 		orig_pos = NotationParser.parse_notation(orig)
 		dest_pos = NotationParser.parse_notation(dest)
 
@@ -117,19 +117,20 @@ class ChessMate
 		end
 
 		valid_move = nil
+		board = test_board.nil? ? @board : test_board
 		case piece_type
 		when "P"
-			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = Pawn.move_is_valid?(orig_pos,dest_pos,board)
 		when "R"
-			valid_move = Rook.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = Rook.move_is_valid?(orig_pos,dest_pos,board)
 		when "B"
-			valid_move = Bishop.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = Bishop.move_is_valid?(orig_pos,dest_pos,board)
 		when "N"
-			valid_move = Knight.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = Knight.move_is_valid?(orig_pos,dest_pos,board)
 		when "Q"
-			valid_move = Queen.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = Queen.move_is_valid?(orig_pos,dest_pos,board)
 		when "K"
-			valid_move = King.move_is_valid?(orig_pos,dest_pos,@board)
+			valid_move = King.move_is_valid?(orig_pos,dest_pos,board)
 		else
 			valid_move = false
 		end
@@ -155,7 +156,7 @@ class ChessMate
 		dest_x = dest[1]
 		piece = test_board[orig_y][orig_x]
 
-		# Hacky way of doing this. Will fail for en passant and casling.
+		# Hacky way of doing this. Will fail for en passant and castling.
 		test_board[orig_y][orig_x] = nil
 		test_board[dest_y][dest_x] = piece
 
@@ -175,20 +176,51 @@ class ChessMate
 
 		king_pos = NotationParser.encode_notation(king_coords)
 
-		in_check = false
 		test_board.each_with_index do |row, y|
 			row.each_with_index do |col, x|
-				if !col.nil?
+				if !col.nil? && col[0] != piece_color
 					piece_pos = NotationParser.encode_notation([y,x])
-					if col[0] != piece_color
-						if move(piece_pos, king_pos, true)
-							in_check = true
+					if move(piece_pos, king_pos, true, test_board)
+						return true
+					end
+				end
+			end
+		end
+
+		false
+	end
+
+	def any_valid_moves?(color)
+		test_board = @board.map(&:dup)
+
+		test_board.each_with_index do |row, orig_y|
+			row.each_with_index do |col, orig_x|
+				if !col.nil? && col[0] == color
+					orig_pos = NotationParser.encode_notation([orig_y,orig_x])
+					8.times do |dest_x|
+						8.times do |dest_y|
+							dest_pos = NotationParser.encode_notation([dest_y, dest_x])
+							if move(orig_pos, dest_pos, true)
+								if !in_check_after_move?([orig_y,orig_x],[dest_y,dest_x])
+									return true
+								end	
+							end
 						end
 					end
 				end
 			end
 		end
 
-		in_check
+		false
+	end
+
+	def checkmate?(color)
+		piece_color = color.downcase == "w" ? :white : :black
+		!any_valid_moves?(color) && in_check?[piece_color]
+	end
+
+	def draw?(color)
+		piece_color = color.downcase == "w" ? :white : :black
+		!any_valid_moves?(color) && in_check?[piece_color] == false
 	end
 end
