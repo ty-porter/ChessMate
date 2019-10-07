@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'chessmate'
-  s.version     = '0.1.0'
+  s.version     = '0.2.0'
   s.date        = '2018-09-23'
   s.summary     = "Chess for Rails"
   s.description = "A simple chess move validator"
