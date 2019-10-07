@@ -13,7 +13,7 @@ class ChessMate
 		if board.nil?
 			@board = 
 					[
-					['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+					['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
 					['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
 					[nil, nil, nil, nil, nil, nil, nil, nil],
 					[nil, nil, nil, nil, nil, nil, nil, nil],
