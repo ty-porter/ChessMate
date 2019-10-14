@@ -140,7 +140,7 @@ class ChessMate
 			in_check_after_move = in_check_after_move?(orig_pos,dest_pos)
 		end
 
-		if valid_move && !test && !@in_check[piece_color] && !in_check_after_move
+		if valid_move && !test && !in_check_after_move
 			self.update(orig_pos, dest_pos)
 		end 
 
