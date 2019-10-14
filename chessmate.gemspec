@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'chessmate'
-  s.version     = '0.2.0'
-  s.date        = '2018-09-23'
+  s.version     = '0.3.0'
+  s.date        = '2019-10-13'
   s.summary     = "Chess for Rails"
   s.description = "A simple chess move validator"
   s.authors     = ["Tyler Porter"]
