@@ -13,7 +13,7 @@ describe ChessMate do
         it "should return the board state" do
             expect(@chess.board).to eql(
                 [
-                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                 ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -35,7 +35,7 @@ describe ChessMate do
             @chess.update([6,0], [5,0])
             expect(@chess.board).to eql(
                 [
-                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                 ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -134,7 +134,7 @@ describe ChessMate do
             chess.in_check?
             expect(chess.board).to eql(
                 [
-                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                 ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -201,11 +201,32 @@ describe ChessMate do
             )
         end
 
+        it "should let players move out of check" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][3] = "WK"
+            board[0][4] = "BK"
+            board[0][3] = "BQ"
+            chess = ChessMate.new(board)
+            chess.move('d1', 'e1')
+            expect(chess.board).to eql(
+                [
+                [nil, nil, nil, "BQ", "BK", nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, nil, nil, nil, nil],
+                [nil, nil, nil, nil, "WK", nil, nil, nil],
+                ]
+            )
+        end
+
         it "should return false if the move is not within the bounds of the board" do
             expect(@chess.move('z2', 'c3')).to eql(false)
             expect(@chess.board).to eql(
                 [
-                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                 ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -228,7 +249,7 @@ describe ChessMate do
             expect(@chess.move('d1', 'b3')).to eql(false)
             expect(@chess.board).to eql(
                 [
-                ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                 ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
                 [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -245,7 +266,7 @@ describe ChessMate do
                 @chess.move('c2', 'c3')
                 expect(@chess.board).to eql(
                     [
-                    ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                    ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                     ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -266,7 +287,7 @@ describe ChessMate do
                 chess.move('c2', 'c4')
                 expect(chess.board).to eql(
                     [
-                    ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                    ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                     ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -280,7 +301,7 @@ describe ChessMate do
                 chess.move('b7', 'b5')
                 expect(chess.board).to eql(
                     [
-                    ['BR', 'BN', 'BN', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                    ['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
                     ['BP', nil, 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
                     [nil, nil, nil, nil, nil, nil, nil, nil],
                     [nil, 'BP', nil, nil, nil, nil, nil, nil],
