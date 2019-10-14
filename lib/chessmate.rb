@@ -7,7 +7,7 @@ class ChessMate
 	require 'pieces/queen'
 	require 'pieces/king'
 	
-	attr_reader :board, :turn, :in_check
+	attr_reader :board, :turn, :in_check, :promotable
 
 	def initialize(board=nil,turn=nil)
 		if board.nil?
@@ -36,6 +36,8 @@ class ChessMate
 			"white": false,
 			"black": false
 		}
+
+		@promotable = nil
 	end	
 
 	def update(orig, dest=nil)
@@ -136,12 +138,15 @@ class ChessMate
 		end
 
 		if !test
-			@in_check = self.in_check?
+			@in_check = in_check?
 			in_check_after_move = in_check_after_move?(orig_pos,dest_pos)
 		end
 
 		if valid_move && !test && !in_check_after_move
-			self.update(orig_pos, dest_pos)
+			update(orig_pos, dest_pos)
+			if piece_type == "P" && promote?(dest_pos)
+				@promotable = dest_pos
+			end
 		end 
 
 		valid_move && !@in_check[piece_color] && !in_check_after_move
@@ -222,5 +227,36 @@ class ChessMate
 	def draw?(color)
 		piece_color = color.downcase == "w" ? :white : :black
 		!any_valid_moves?(color) && in_check?[piece_color] == false
+	end
+
+	def promote?(square)
+		square_y = square[0]
+		square_x = square[1]
+		piece = @board[square_y][square_x][0]
+		promote_column = piece.downcase() == 'w' ? 0 : 7
+		promote_column == square_y
+	end
+
+	def promote!(square, piece)
+		square_y = square[0]
+		square_x = square[1]
+
+		old_piece = @board[square_y][square_x]
+		return nil if old_piece.nil? || !promote?(square)
+
+		case piece.downcase()
+		when 'rook'
+			piece_type = 'R'
+		when 'knight'
+			piece_type = 'N'
+		when 'bishop'
+			piece_type = 'B'
+		when 'queen'
+			piece_type = 'Q'
+		else 
+			return nil
+		end
+
+		@board[square_y][square_x] = old_piece[0] + piece_type
 	end
 end

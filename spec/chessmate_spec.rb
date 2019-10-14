@@ -412,6 +412,26 @@ describe ChessMate do
                     ]
                 )
             end
+
+            it "should flag a pawn as promotable if moving to the last rank" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[1][0] = "WP"
+                chess = ChessMate.new(board)
+                chess.move('a7', 'a8')
+                expect(chess.board).to eql(
+                    [
+                    ['WP', nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+                expect(chess.promotable).to eql([0,0])
+            end
         end
         
         context "for rooks" do
@@ -970,6 +990,75 @@ describe ChessMate do
             board[4][5] = "BR"
             chess = ChessMate.new(board)
             expect(chess.draw?("W")).to eql(false)
+        end
+    end
+
+    describe "promote? method" do
+        it "should return true if white piece is on last rank" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[0][0] = "WP"
+            chess = ChessMate.new(board)
+            expect(chess.promote?([0,0])).to eql(true)
+        end
+
+        it "should return true if black piece is on last rank" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[7][0] = "BP"
+            chess = ChessMate.new(board)
+            expect(chess.promote?([7,0])).to eql(true)
+        end
+
+        it "should return false otherwise" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[1][0] = "WP"
+            board[6][0] = "BP"
+            chess = ChessMate.new(board)
+            expect(chess.promote?([1,0])).to eql(false)
+            expect(chess.promote?([6,0])).to eql(false)
+        end
+    end
+
+    describe "promote! method" do
+        it "should return nil if piece cannot promote" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[1][0] = "WP"
+            chess = ChessMate.new(board)
+            expect(chess.promote!([1,0], 'queen')).to eql(nil)
+        end
+
+        it "should return nil for invalid/junk promotion data" do
+            board = Array.new(8) { Array.new(8,nil) }
+            board[0][0] = "WP"
+            chess = ChessMate.new(board)
+            expect(chess.promote!([0,0], 'king')).to eql(nil)
+        end
+
+        context "should promote to" do
+            before :each do 
+                board = Array.new(8) { Array.new(8,nil) }
+                board[0][0] = "WP"
+                @chess = ChessMate.new(board)
+            end
+
+            it "queen" do
+                @chess.promote!([0,0], 'queen')
+                expect(@chess.board[0][0]).to eql("WQ")
+            end
+
+            it "bishop" do
+                @chess.promote!([0,0], 'bishop')
+                expect(@chess.board[0][0]).to eql("WB")
+            end
+
+            it "knight" do
+                @chess.promote!([0,0], 'knight')
+                expect(@chess.board[0][0]).to eql("WN")
+            end
+
+            it "rook" do
+                @chess.promote!([0,0], 'rook')
+                expect(@chess.board[0][0]).to eql("WR")
+            end
         end
     end
 end
