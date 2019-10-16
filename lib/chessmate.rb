@@ -9,7 +9,7 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
 
-  attr_reader :board, :turn, :in_check, :promotable
+  attr_reader :board, :turn, :in_check, :promotable, :en_passant
 
   def initialize(board = nil, turn = nil)
     @board = if board.nil?
@@ -39,6 +39,7 @@ class ChessMate
     }
 
     @promotable = nil
+    @en_passant = nil
   end
 
   def update(orig, dest = nil)
