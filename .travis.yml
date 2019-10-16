@@ -1,5 +1,11 @@
 language: ruby
 rvm:
+ - 2.3
  - 2.5
 
- script: 'rspec && rubocop'
+before_install:
+ - gem i rubocop
+ - gem i rspec
+
+script: 
+ - rspec && rubocop
