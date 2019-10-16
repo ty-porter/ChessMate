@@ -432,6 +432,52 @@ describe ChessMate do
                 )
                 expect(chess.promotable).to eql([0,0])
             end
+
+            it "should allow en passant under correct circumstances" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[1][0] = "BP"
+                board[3][1] = "WP"
+                chess = ChessMate.new(board)
+                chess.move('a7', 'a5')
+                chess.move('b5', 'a6')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ['WP', nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
+
+            it "should not allow en passant after first move" do
+                board = Array.new(8) { Array.new(8,nil) }
+                board[1][0] = "BP"
+                board[3][1] = "WP"
+                board[6][7] = "WP"
+                board[1][7] = "BP"
+                chess = ChessMate.new(board)
+                chess.move('a7', 'a5')
+                chess.move('h2', 'h3')
+                chess.move('h7', 'h6')
+                chess.move('b5', 'a6')
+                expect(chess.board).to eql(
+                    [
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, "BP"],
+                    ["BP", "WP", nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, "WP"],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    [nil, nil, nil, nil, nil, nil, nil, nil],
+                    ]
+                )
+            end
         end
         
         context "for rooks" do
