@@ -39,7 +39,7 @@ class ChessMate
     }
 
     @promotable = nil
-    @en_passant = nil
+    @en_passant = { white: nil, black: nil }
   end
 
   def update(orig, dest = nil)
@@ -48,8 +48,16 @@ class ChessMate
     dest_y = dest[0]
     dest_x = dest[1]
     piece_type = @board[orig_y][orig_x]
+    opposite_color = piece_type[0] == 'W' ? :black : :white
+    direction = opposite_color == :white ? -1 : 1
 
-    # Hacky way of doing this. Will fail for en passant and castling.
+    if piece_type[1] == 'P' && @en_passant[opposite_color] == [dest_y + direction, dest_x]
+      en_passant = true
+      en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
+    end
+
+    @board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
 
@@ -105,10 +113,12 @@ class ChessMate
                     :black
                   end
 
+    @en_passant[piece_color] = nil if @en_passant[piece_color]
+
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
                  when 'P'
-                   Pawn.move_is_valid?(orig_pos, dest_pos, board)
+                   Pawn.move_is_valid?(orig_pos, dest_pos, board, @en_passant)
                  when 'R'
                    Rook.move_is_valid?(orig_pos, dest_pos, board)
                  when 'B'
@@ -126,6 +136,9 @@ class ChessMate
     unless test
       @in_check = in_check?
       in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
+      if valid_move && piece_type == 'P'
+        @en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+      end
     end
 
     if valid_move && !test && !in_check_after_move
@@ -144,10 +157,19 @@ class ChessMate
     dest_y = dest[0]
     dest_x = dest[1]
     piece = test_board[orig_y][orig_x]
+    piece_type = test_board[orig_y][orig_x]
+    opposite_color = piece_type[0] == 'W' ? :black : :white
+    direction = opposite_color == :white ? -1 : 1
 
-    # Hacky way of doing this. Will fail for en passant and castling.
+    if piece_type[1] == 'P' && @en_passant[opposite_color] == [dest_y + direction, dest_x]
+      en_passant = true
+      en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
+    end
+
+    test_board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+
     test_board[orig_y][orig_x] = nil
-    test_board[dest_y][dest_x] = piece
+    test_board[dest_y][dest_x] = piece_type
 
     piece_color = piece[0]
     king = piece_color + 'K'

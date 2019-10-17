@@ -421,6 +421,73 @@ describe ChessMate do
         )
         expect(chess.promotable).to eql([0, 0])
       end
+
+      it 'should allow en passant under correct circumstances for white' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[1][0] = 'BP'
+        board[3][1] = 'WP'
+        chess = ChessMate.new(board)
+        chess.move('a7', 'a5')
+        chess.move('b5', 'a6')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            ['WP', nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil]
+          ]
+        )
+      end
+
+      it 'should allow en passant under correct circumstances for black' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[4][0] = 'BP'
+        board[6][1] = 'WP'
+        chess = ChessMate.new(board)
+        chess.move('b2', 'b4')
+        chess.move('a4', 'b3')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, 'BP', nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil]
+          ]
+        )
+      end
+    end
+
+    it 'should not allow en passant after first move' do
+      board = Array.new(8) { Array.new(8, nil) }
+      board[1][0] = 'BP'
+      board[3][1] = 'WP'
+      board[6][7] = 'WP'
+      board[1][7] = 'BP'
+      chess = ChessMate.new(board)
+      chess.move('a7', 'a5')
+      chess.move('h2', 'h3')
+      chess.move('h7', 'h6')
+      chess.move('b5', 'a6')
+      expect(chess.board).to eql(
+        [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, 'BP'],
+          ['BP', 'WP', nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, 'WP'],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil]
+        ]
+      )
     end
 
     context 'for rooks' do
@@ -1046,6 +1113,36 @@ describe ChessMate do
       it 'rook' do
         @chess.promote!([0, 0], 'rook')
         expect(@chess.board[0][0]).to eql('WR')
+      end
+    end
+  end
+
+  describe 'en_passant method' do
+    before :each do
+      @chess = ChessMate.new
+    end
+
+    context 'en passant not possible' do
+      it 'should return nil for white' do
+        @chess.move('a2', 'a3')
+        expect(@chess.en_passant[:white]).to be_nil
+      end
+
+      it 'should return nil for black' do
+        @chess.move('a7', 'a6')
+        expect(@chess.en_passant[:white]).to be_nil
+      end
+    end
+
+    context 'en passant possible' do
+      it 'should return coords for white' do
+        @chess.move('a2', 'a4')
+        expect(@chess.en_passant[:white]).to eql([4, 0])
+      end
+
+      it 'should return coords for black' do
+        @chess.move('a7', 'a5')
+        expect(@chess.en_passant[:black]).to eql([3, 0])
       end
     end
   end
