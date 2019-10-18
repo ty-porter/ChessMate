@@ -64,9 +64,19 @@ class ChessMate
     if piece_type[1] == 'P' && @en_passant[opposite_color] == [dest_y + direction, dest_x]
       en_passant = true
       en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
-    end
+		end
+		
+		if piece_type[1] == 'K' && (orig_x - dest_x).abs == 2
+			castle = true
+			old_rook_x_position = orig_x < dest_x ? 7 : 0
+			new_rook_x_position = orig_x < dest_x ? 5 : 3
+		end
 
-    @board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+		@board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+		if castle
+			@board[orig_y][old_rook_x_position] = nil
+			@board[orig_y][new_rook_x_position] = piece_type[0] + "R"
+		end
 
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
