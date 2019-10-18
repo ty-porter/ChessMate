@@ -137,12 +137,12 @@ describe ChessMate do
       )
     end
 
-    it "should handle new boards being passed in" do
+    it 'should handle new boards being passed in' do
       board = Array.new(8) { Array.new(8, nil) }
-      board[0][0] = "BQ"
-      board[7][0] = "WK"
+      board[0][0] = 'BQ'
+      board[7][0] = 'WK'
       chess = ChessMate.new(board)
-      expect(chess.in_check?).to eql(        
+      expect(chess.in_check?).to eql(
         "white": true,
         "black": false
       )
@@ -1311,18 +1311,18 @@ describe ChessMate do
     end
   end
 
-  describe "castling method" do
+  describe 'castling method' do
     before :each do
       board = Array.new(8) { Array.new(8, nil) }
       board[7][4] = 'WK'
       board[7][0] = 'WR'
-      board[7][7] = "WR"
+      board[7][7] = 'WR'
       board[0][4] = 'BK'
       board[0][0] = 'BR'
-      board[0][7] = "BR"
+      board[0][7] = 'BR'
       @chess = ChessMate.new(board)
     end
-    context "new game" do
+    context 'new game' do
       it 'should return true for both king/queenside for both colors' do
         castling = @chess.castling
         castling.keys.each do |color|
@@ -1349,7 +1349,7 @@ describe ChessMate do
         @chess.move('a8', 'b8')
         expect(@chess.castling[:black][:queenside]).to eql(false)
         expect(@chess.castling[:black][:kingside]).to eql(true)
-        @chess.move('h1','g1')
+        @chess.move('h1', 'g1')
         expect(@chess.castling[:white][:queenside]).to eql(true)
         expect(@chess.castling[:white][:kingside]).to eql(false)
       end

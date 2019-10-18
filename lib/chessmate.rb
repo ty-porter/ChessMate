@@ -31,21 +31,21 @@ class ChessMate
               1
             else
               turn
-						end
+            end
 
     @promotable = nil
-		@en_passant = { white: nil, black: nil }
-		@castling = {
-			white: {
-				kingside: true,
-				queenside: true
-			},
-			black: {
-				kingside: true,
-				queenside: true
-			}
-		}
-		@in_check = { "white": false, "black": false }
+    @en_passant = { white: nil, black: nil }
+    @castling = {
+      white: {
+        kingside: true,
+        queenside: true
+      },
+      black: {
+        kingside: true,
+        queenside: true
+      }
+    }
+    @in_check = { "white": false, "black": false }
   end
 
   def update(orig, dest = nil)
@@ -60,19 +60,19 @@ class ChessMate
     if piece_type[1] == 'P' && @en_passant[opposite_color] == [dest_y + direction, dest_x]
       en_passant = true
       en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
-		end
-		
-		if piece_type[1] == 'K' && (orig_x - dest_x).abs == 2
-			castle = true
-			old_rook_x_position = orig_x < dest_x ? 7 : 0
-			new_rook_x_position = orig_x < dest_x ? 5 : 3
-		end
+    end
 
-		@board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
-		if castle
-			@board[orig_y][old_rook_x_position] = nil
-			@board[orig_y][new_rook_x_position] = piece_type[0] + "R"
-		end
+    if piece_type[1] == 'K' && (orig_x - dest_x).abs == 2
+      castle = true
+      old_rook_x_position = orig_x < dest_x ? 7 : 0
+      new_rook_x_position = orig_x < dest_x ? 5 : 3
+    end
+
+    @board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+    if castle
+      @board[orig_y][old_rook_x_position] = nil
+      @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
+    end
 
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
@@ -81,7 +81,7 @@ class ChessMate
   end
 
   def in_check?(board = nil)
-		board = board.nil? ? @board : board
+    board = board.nil? ? @board : board
     wk_coords = bk_coords = nil
 
     board.each_with_index do |row, y|
@@ -149,22 +149,22 @@ class ChessMate
 
     unless test
       @in_check = in_check?
-			in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
-			if valid_move
-				case piece_type
-				when 'P'
-					@en_passant[piece_color] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
-				when 'K'
-					@castling[piece_color].keys.each do |direction|
-						@castling[piece_color][direction] = false
-					end
-				when "R" 
-					if (orig_x == 7 || orig_x == 0)
-						direction = orig_x == 7 ? :kingside : :queenside
-						@castling[piece_color][direction] = false
-					end
-				end
-			end
+      in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
+      if valid_move
+        case piece_type
+        when 'P'
+          @en_passant[piece_color] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+        when 'K'
+          @castling[piece_color].keys.each do |direction|
+            @castling[piece_color][direction] = false
+          end
+        when 'R'
+          if [0, 7].include?(orig_x)
+            direction = orig_x == 7 ? :kingside : :queenside
+            @castling[piece_color][direction] = false
+          end
+        end
+      end
     end
 
     if valid_move && !test && !in_check_after_move
