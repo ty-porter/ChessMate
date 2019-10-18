@@ -1034,6 +1034,27 @@ describe ChessMate do
         )
       end
 
+      it 'should not allow castling if king is in check' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][7] = 'WR'
+        board[0][4] = 'BQ'
+        chess = ChessMate.new(board)
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, 'BQ', nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'WK', nil, nil, 'WR']
+          ]
+        )
+      end
+
       it 'should not allow castling if king has previously moved' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WK'
@@ -1274,6 +1295,51 @@ describe ChessMate do
       it 'should return coords for black' do
         @chess.move('a7', 'a5')
         expect(@chess.en_passant[:black]).to eql([3, 0])
+      end
+    end
+  end
+
+  describe "castling method" do
+    before :each do
+      board = Array.new(8) { Array.new(8, nil) }
+      board[7][4] = 'WK'
+      board[7][0] = 'WR'
+      board[7][7] = "WR"
+      board[0][4] = 'BK'
+      board[0][0] = 'BR'
+      board[0][7] = "BR"
+      @chess = ChessMate.new(board)
+    end
+    context "new game" do
+      it 'should return true for both king/queenside for both colors' do
+        castling = @chess.castling
+        castling.keys.each do |color|
+          castling[color].keys.each do |direction|
+            expect(castling[color][direction]).to eql(true)
+          end
+        end
+      end
+    end
+
+    context 'pieces moved' do
+      it 'should return false for both king/queenside if king moved' do
+        @chess.move('e1', 'd1')
+        @chess.move('e8', 'd8')
+        castling = @chess.castling
+        castling.keys.each do |color|
+          castling[color].keys.each do |direction|
+            expect(castling[color][direction]).to eql(false)
+          end
+        end
+      end
+
+      it 'should return false for either side if rook moved' do
+        @chess.move('a8', 'b8')
+        expect(@chess.castling[:black][:queenside]).to eql(false)
+        expect(@chess.castling[:black][:kingside]).to eql(true)
+        @chess.move('h1','g1')
+        expect(@chess.castling[:white][:queenside]).to eql(true)
+        expect(@chess.castling[:white][:kingside]).to eql(false)
       end
     end
   end

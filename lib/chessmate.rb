@@ -9,7 +9,7 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
 
-  attr_reader :board, :turn, :in_check, :promotable, :en_passant
+  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
 
   def initialize(board = nil, turn = nil)
     @board = if board.nil?
@@ -39,7 +39,17 @@ class ChessMate
     }
 
     @promotable = nil
-    @en_passant = { white: nil, black: nil }
+		@en_passant = { white: nil, black: nil }
+		@castling = {
+			white: {
+				kingside: true,
+				queenside: true
+			},
+			black: {
+				kingside: true,
+				queenside: true
+			}
+		}
   end
 
   def update(orig, dest = nil)
@@ -128,17 +138,30 @@ class ChessMate
                  when 'Q'
                    Queen.move_is_valid?(orig_pos, dest_pos, board)
                  when 'K'
-                   King.move_is_valid?(orig_pos, dest_pos, board)
+                   King.move_is_valid?(orig_pos, dest_pos, board, @castling)
                  else
                    false
                  end
 
     unless test
       @in_check = in_check?
-      in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
-      if valid_move && piece_type == 'P'
-        @en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
-      end
+			in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
+			if valid_move
+				if piece_type == 'P'
+					@en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+				end
+				
+				if piece_type == 'K'
+					@castling[piece_color.to_sym].keys.each do |direction|
+						@castling[piece_color.to_sym][direction] = false
+					end
+				end
+
+				if piece_type == "R" && (orig_x == 7 || orig_x == 0)
+					direction = orig_x == 7 ? :kingside : :queenside
+					@castling[piece_color.to_sym][direction] = false
+				end
+			end
     end
 
     if valid_move && !test && !in_check_after_move
