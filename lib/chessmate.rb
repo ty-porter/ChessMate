@@ -147,18 +147,17 @@ class ChessMate
       @in_check = in_check?
 			in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
 			if valid_move
-				if piece_type == 'P'
+				case piece_type
+				when 'P'
 					@en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
-				end
-				
-				if piece_type == 'K'
+				when 'K'
 					@castling[piece_color.to_sym].keys.each do |direction|
 						@castling[piece_color.to_sym][direction] = false
 					end
-				end
-
-				if piece_type == "R" && (orig_x == 7 || orig_x == 0)
-					direction = orig_x == 7 ? :kingside : :queenside
+				when "R" 
+					if (orig_x == 7 || orig_x == 0)
+						direction = orig_x == 7 ? :kingside : :queenside
+					end
 					@castling[piece_color.to_sym][direction] = false
 				end
 			end
