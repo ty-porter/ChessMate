@@ -944,6 +944,137 @@ describe ChessMate do
           ]
         )
       end
+
+      it 'should allow castling kingside under correct circumstances' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][7] = 'WR'
+        chess = ChessMate.new(board)
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, 'WR', 'WK', nil]
+          ]
+        )
+      end
+
+      it 'should allow castling queenside under correct circumstances' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][0] = 'WR'
+        chess = ChessMate.new(board)
+        chess.move('e1', 'c1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, 'WK', 'WR', nil, nil, nil, nil]
+          ]
+        )
+      end
+
+      it 'should not allow castling if path is blocked' do
+        chess = ChessMate.new
+        board = chess.board.map(&:dup)
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(board)
+      end
+
+      it 'should not allow castling if move results in check' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][7] = 'WR'
+        board[0][6] = 'BQ'
+        chess = ChessMate.new(board)
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, 'BQ', nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'WK', nil, nil, 'WR']
+          ]
+        )
+      end
+
+      it 'should not allow castling if king passes through check' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][7] = 'WR'
+        board[0][5] = 'BQ'
+        chess = ChessMate.new(board)
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, 'BQ', nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'WK', nil, nil, 'WR']
+          ]
+        )
+      end
+
+      it 'should not allow castling if king has previously moved' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][3] = 'WK'
+        board[7][7] = 'WR'
+        chess = ChessMate.new(board)
+        chess.move('d1', 'e1')
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'WK', nil, nil, 'WR']
+          ]
+        )
+      end
+
+      it 'should not allow castling if rook has previously moved' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[7][4] = 'WK'
+        board[7][6] = 'WR'
+        chess = ChessMate.new(board)
+        chess.move('g1', 'h1')
+        chess.move('e1', 'g1')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'WK', nil, nil, 'WR']
+          ]
+        )
+      end
     end
   end
 
