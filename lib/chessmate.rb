@@ -31,12 +31,7 @@ class ChessMate
               1
             else
               turn
-            end
-
-    @in_check = {
-      "white": false,
-      "black": false
-    }
+						end
 
     @promotable = nil
 		@en_passant = { white: nil, black: nil }
@@ -50,6 +45,7 @@ class ChessMate
 				queenside: true
 			}
 		}
+		@in_check = { "white": false, "black": false }
   end
 
   def update(orig, dest = nil)
@@ -85,7 +81,7 @@ class ChessMate
   end
 
   def in_check?(board = nil)
-    board = board.nil? ? @board : board
+		board = board.nil? ? @board : board
     wk_coords = bk_coords = nil
 
     board.each_with_index do |row, y|
@@ -93,10 +89,8 @@ class ChessMate
       bk_coords = [y, row.index('BK')] if row.include?('BK')
     end
 
-    return { "white": false, "black": false } if wk_coords.nil? || bk_coords.nil?
-
-    wk_pos = NotationParser.encode_notation(wk_coords)
-    bk_pos = NotationParser.encode_notation(bk_coords)
+    wk_pos = NotationParser.encode_notation(wk_coords) if wk_coords
+    bk_pos = NotationParser.encode_notation(bk_coords) if bk_coords
 
     white_in_check = black_in_check = false
     board.each_with_index do |row, y|
@@ -104,9 +98,9 @@ class ChessMate
         next if col.nil?
 
         piece_pos = NotationParser.encode_notation([y, x])
-        if col[0] == 'W'
+        if col[0] == 'W' && bk_pos
           black_in_check = true if move(piece_pos, bk_pos, true)
-        elsif col[0] == 'B'
+        elsif col[0] == 'B' && wk_pos
           white_in_check = true if move(piece_pos, wk_pos, true)
         end
       end
@@ -159,16 +153,16 @@ class ChessMate
 			if valid_move
 				case piece_type
 				when 'P'
-					@en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+					@en_passant[piece_color] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
 				when 'K'
-					@castling[piece_color.to_sym].keys.each do |direction|
-						@castling[piece_color.to_sym][direction] = false
+					@castling[piece_color].keys.each do |direction|
+						@castling[piece_color][direction] = false
 					end
 				when "R" 
 					if (orig_x == 7 || orig_x == 0)
 						direction = orig_x == 7 ? :kingside : :queenside
+						@castling[piece_color][direction] = false
 					end
-					@castling[piece_color.to_sym][direction] = false
 				end
 			end
     end

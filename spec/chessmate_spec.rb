@@ -136,6 +136,17 @@ describe ChessMate do
         ]
       )
     end
+
+    it "should handle new boards being passed in" do
+      board = Array.new(8) { Array.new(8, nil) }
+      board[0][0] = "BQ"
+      board[7][0] = "WK"
+      chess = ChessMate.new(board)
+      expect(chess.in_check?).to eql(        
+        "white": true,
+        "black": false
+      )
+    end
   end
 
   describe 'move method' do
@@ -1079,8 +1090,9 @@ describe ChessMate do
       it 'should not allow castling if rook has previously moved' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
-        board[7][6] = 'WR'
+        board[7][7] = 'WR'
         chess = ChessMate.new(board)
+        chess.move('h1', 'g1')
         chess.move('g1', 'h1')
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
