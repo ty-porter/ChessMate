@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry'
-
 class ChessMate
   require 'helpers/notation_parser'
   require 'pieces/pawn'

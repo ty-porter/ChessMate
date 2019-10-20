@@ -10,11 +10,11 @@ Gem::Specification.new do |s|
   s.email       = 'tyler.b.porter@gmail.com'
   s.files       = Dir['**/*'].keep_if { |file| !file.match('gem') && File.file?(file) }
 
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'pry', '~> 0'
+  s.add_development_dependency 'rspec', '~> 0'
+  s.add_development_dependency 'rubocop', '~> 0'
 
-  s.add_dependency 'deep_dup'
+  s.add_dependency 'deep_dup', '~> 0'
 
   s.license     = 'MIT'
   s.homepage    = 'https://rubygems.org/gems/chessmate'
