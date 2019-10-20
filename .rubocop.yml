@@ -21,3 +21,6 @@ Metrics/ClassLength:
 
 Style/Documentation:
   Enabled: false
+
+Metrics/BlockNesting:
+  Max: 5

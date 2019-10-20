@@ -9,7 +9,7 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
 
-  attr_reader :board, :turn, :in_check, :promotable, :en_passant
+  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
 
   def initialize(board = nil, turn = nil)
     @board = if board.nil?
@@ -33,13 +33,19 @@ class ChessMate
               turn
             end
 
-    @in_check = {
-      "white": false,
-      "black": false
-    }
-
     @promotable = nil
     @en_passant = { white: nil, black: nil }
+    @castling = {
+      white: {
+        kingside: true,
+        queenside: true
+      },
+      black: {
+        kingside: true,
+        queenside: true
+      }
+    }
+    @in_check = { "white": false, "black": false }
   end
 
   def update(orig, dest = nil)
@@ -56,7 +62,17 @@ class ChessMate
       en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
     end
 
+    if piece_type[1] == 'K' && (orig_x - dest_x).abs == 2
+      castle = true
+      old_rook_x_position = orig_x < dest_x ? 7 : 0
+      new_rook_x_position = orig_x < dest_x ? 5 : 3
+    end
+
     @board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+    if castle
+      @board[orig_y][old_rook_x_position] = nil
+      @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
+    end
 
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
@@ -73,10 +89,8 @@ class ChessMate
       bk_coords = [y, row.index('BK')] if row.include?('BK')
     end
 
-    return { "white": false, "black": false } if wk_coords.nil? || bk_coords.nil?
-
-    wk_pos = NotationParser.encode_notation(wk_coords)
-    bk_pos = NotationParser.encode_notation(bk_coords)
+    wk_pos = NotationParser.encode_notation(wk_coords) if wk_coords
+    bk_pos = NotationParser.encode_notation(bk_coords) if bk_coords
 
     white_in_check = black_in_check = false
     board.each_with_index do |row, y|
@@ -84,9 +98,9 @@ class ChessMate
         next if col.nil?
 
         piece_pos = NotationParser.encode_notation([y, x])
-        if col[0] == 'W'
+        if col[0] == 'W' && bk_pos
           black_in_check = true if move(piece_pos, bk_pos, true)
-        elsif col[0] == 'B'
+        elsif col[0] == 'B' && wk_pos
           white_in_check = true if move(piece_pos, wk_pos, true)
         end
       end
@@ -128,7 +142,7 @@ class ChessMate
                  when 'Q'
                    Queen.move_is_valid?(orig_pos, dest_pos, board)
                  when 'K'
-                   King.move_is_valid?(orig_pos, dest_pos, board)
+                   King.move_is_valid?(orig_pos, dest_pos, board, @castling)
                  else
                    false
                  end
@@ -136,8 +150,20 @@ class ChessMate
     unless test
       @in_check = in_check?
       in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
-      if valid_move && piece_type == 'P'
-        @en_passant[piece_color.to_sym] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+      if valid_move
+        case piece_type
+        when 'P'
+          @en_passant[piece_color] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
+        when 'K'
+          @castling[piece_color].keys.each do |direction|
+            @castling[piece_color][direction] = false
+          end
+        when 'R'
+          if [0, 7].include?(orig_x)
+            direction = orig_x == 7 ? :kingside : :queenside
+            @castling[piece_color][direction] = false
+          end
+        end
       end
     end
 
