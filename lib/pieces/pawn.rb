@@ -27,12 +27,13 @@ class Pawn < Piece
       return true
     end
 
-    not_obstructed = !obstructed?(orig, dest, board)
+    not_obstructed = !obstructed?(orig, dest, board) && !dest_occupied?(dest, board)
 
     basic_move = ((orig_y - dest_y) * direction == 1 && orig_x == dest_x)
     move_double_on_first_turn = (orig_y - dest_y == (2 * direction)) && (orig_x == dest_x)
 
-    move_double_on_first_turn && not_obstructed || basic_move
+    # binding.pry
+    not_obstructed && (move_double_on_first_turn || basic_move)
   end
 
   def self.en_passant(orig, dest, board, en_passant)
@@ -53,5 +54,11 @@ class Pawn < Piece
       end
     end
     false
+  end
+
+  def self.dest_occupied?(dest, board)
+    dest_y = dest[0]
+    dest_x = dest[1]
+    !board[dest_y][dest_x].nil?
   end
 end
