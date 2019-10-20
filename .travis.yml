@@ -4,8 +4,8 @@ rvm:
  - 2.5
 
 before_install:
- - gem i rubocop
- - gem i rspec
+ - gem i bundler, '~> 2.0.0'
+ - bundle install
 
 script: 
  - rspec && rubocop
