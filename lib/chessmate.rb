@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'deep_dup'
+
 class ChessMate
   require 'helpers/notation_parser'
   require 'pieces/pawn'
@@ -9,7 +11,6 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
   require 'helpers/default'
-  require 'deep_dup'
 
   attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
 
