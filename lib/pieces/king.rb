@@ -30,7 +30,7 @@ class King < Piece
     return false if castling[king_color][castle_direction] == false
 
     test_board = board.map(&:dup)
-    return false if ChessMate.new(test_board).in_check?(test_board)[king_color]
+    return false if ChessMate.new(board: test_board).in_check?(test_board)[king_color]
 
     test_range = castle_direction == :kingside ? [5, 6] : [1, 2, 3]
     test_range.each do |x|
@@ -39,7 +39,7 @@ class King < Piece
       test_board = board.map(&:dup)
       test_board[orig_y][x] = 'WK'
       test_board[orig_y][orig_x] = nil
-      test = ChessMate.new(test_board)
+      test = ChessMate.new(board: test_board)
       return false if test.in_check?(test_board)[king_color] && x != 1
     end
     true

@@ -3,27 +3,72 @@
 require 'spec_helper'
 require_relative '../lib/chessmate'
 require_relative '../lib/helpers/notation_parser'
+require_relative '../lib/helpers/default'
 Dir['../lib/pieces/*.rb'].each { |file| require file }
 
 describe ChessMate do
+  describe 'initialize method' do
+    context "should accept custom parameters" do
+      it "for board" do
+        board = Array.new(8) { Array.new(8, nil) }
+        chess = ChessMate.new(board: board)
+        expect(chess.board).to eql(board)
+      end
+
+      it "for en_passant" do
+        en_passant = { white: true, black: nil }
+        chess = ChessMate.new(en_passant: en_passant)
+        expect(chess.en_passant).to eql(en_passant)
+      end
+
+      it "for castling" do
+        castling = {
+          white: {
+            kingside: false,
+            queenside: true
+          },
+          black: {
+            kingside: true,
+            queenside: true
+          }
+        }
+        chess = ChessMate.new(castling: castling)
+        expect(chess.castling).to eql(castling)
+      end
+
+      it "for turn" do
+        turn = rand(10)
+        chess = ChessMate.new(turn: turn)
+        expect(chess.turn).to eql(turn)
+      end
+
+      it "for in_check" do
+        in_check = { "white": true, "black": false }
+        chess = ChessMate.new(in_check: in_check)
+        expect(chess.in_check).to eql(in_check)
+      end
+    end
+
+    context "no custom parameters" do
+      it "should generate a default game" do
+        chess = ChessMate.new
+        expect(chess.board).to eql(DEFAULT[:board])
+        expect(chess.turn).to eql(DEFAULT[:turn])
+        expect(chess.promotable).to eql(DEFAULT[:promotable])
+        expect(chess.en_passant).to eql(DEFAULT[:en_passant])
+        expect(chess.castling).to eql(DEFAULT[:castling])
+        expect(chess.in_check).to eql(DEFAULT[:in_check])
+      end
+    end
+  end
+
   describe 'board method' do
     before :each do
       @chess = ChessMate.new
     end
 
     it 'should return the board state' do
-      expect(@chess.board).to eql(
-        [
-          %w[BR BN BB BQ BK BB BN BR],
-          %w[BP BP BP BP BP BP BP BP],
-          [nil, nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, nil, nil, nil, nil],
-          %w[WP WP WP WP WP WP WP WP],
-          %w[WR WN WB WQ WK WB WN WR]
-        ]
-      )
+      expect(@chess.board).to eql(DEFAULT[:board])
     end
   end
 
@@ -81,7 +126,7 @@ describe ChessMate do
 
     it 'should handle a malformed board by returning default value' do
       board = Array.new(8) { Array.new(8, nil) }
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.in_check?).to eql(
         "white": false,
         "black": false
@@ -101,7 +146,7 @@ describe ChessMate do
       board[7][4] = 'WK'
       board[0][4] = 'BQ'
       board[0][5] = 'BK'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.in_check?).to eql(
         "white": true,
         "black": false
@@ -113,7 +158,7 @@ describe ChessMate do
       board[7][4] = 'WK'
       board[7][5] = 'WQ'
       board[0][5] = 'BK'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.in_check?).to eql(
         "white": false,
         "black": true
@@ -141,7 +186,7 @@ describe ChessMate do
       board = Array.new(8) { Array.new(8, nil) }
       board[0][0] = 'BQ'
       board[7][0] = 'WK'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.in_check?).to eql(
         "white": true,
         "black": false
@@ -160,7 +205,7 @@ describe ChessMate do
       board[6][0] = 'WP'
       board[0][4] = 'BK'
       board[1][4] = 'BQ'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       chess.move('a2', 'a3')
       expect(chess.in_check?).to eql(
         "white": true,
@@ -185,7 +230,7 @@ describe ChessMate do
       board[7][4] = 'WK'
       board[0][4] = 'BK'
       board[0][3] = 'BQ'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       chess.move('e1', 'd1')
       expect(chess.board).to eql(
         [
@@ -206,7 +251,7 @@ describe ChessMate do
       board[7][3] = 'WK'
       board[0][4] = 'BK'
       board[0][3] = 'BQ'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       chess.move('d1', 'e1')
       expect(chess.board).to eql(
         [
@@ -317,7 +362,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[6][0] = 'WP'
         board[5][0] = 'BP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a2', 'a4')
         expect(chess.board).to eql(
           [
@@ -337,7 +382,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[5][5] = 'WP'
         board[4][4] = 'BP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('f3', 'e4')
         expect(chess.board).to eql(
           [
@@ -357,7 +402,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[4][4] = 'WP'
         board[5][5] = 'BP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e4', 'f3')
         expect(chess.board).to eql(
           [
@@ -377,7 +422,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[4][4] = 'WP'
         board[5][5] = 'WP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('f3', 'e4')
         expect(chess.board).to eql(
           [
@@ -397,7 +442,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[4][4] = 'WP'
         board[5][5] = 'BP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e4', 'e3')
         expect(chess.board).to eql(
           [
@@ -416,7 +461,7 @@ describe ChessMate do
       it 'should flag a pawn as promotable if moving to the last rank' do
         board = Array.new(8) { Array.new(8, nil) }
         board[1][0] = 'WP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a7', 'a8')
         expect(chess.board).to eql(
           [
@@ -437,7 +482,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[1][0] = 'BP'
         board[3][1] = 'WP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a7', 'a5')
         chess.move('b5', 'a6')
         expect(chess.board).to eql(
@@ -458,7 +503,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[4][0] = 'BP'
         board[6][1] = 'WP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('b2', 'b4')
         chess.move('a4', 'b3')
         expect(chess.board).to eql(
@@ -482,7 +527,7 @@ describe ChessMate do
       board[3][1] = 'WP'
       board[6][7] = 'WP'
       board[1][7] = 'BP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       chess.move('a7', 'a5')
       chess.move('h2', 'h3')
       chess.move('h7', 'h6')
@@ -505,7 +550,7 @@ describe ChessMate do
       it 'should update the board if rook moves vertically' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][0] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a1', 'a8')
         expect(chess.board).to eql(
           [
@@ -524,7 +569,7 @@ describe ChessMate do
       it 'should update the board if the rook moves horizontally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][0] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a1', 'h1')
         expect(chess.board).to eql(
           [
@@ -543,7 +588,7 @@ describe ChessMate do
       it 'should return false for a move that is neither horizontal or vertical' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][0] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         expect(chess.move('a1', 'g8')).to eql(false)
       end
 
@@ -551,7 +596,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][0] = 'WR'
         board[7][7] = 'BR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a1', 'h1')
         expect(chess.board).to eql(
           [
@@ -571,7 +616,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][0] = 'WR'
         board[7][7] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('a1', 'h1')
         expect(chess.board).to eql(
           [
@@ -592,7 +637,7 @@ describe ChessMate do
       it 'should update the board if the bishop moves diagonally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WB'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'h6')
         expect(chess.board).to eql(
           [
@@ -611,7 +656,7 @@ describe ChessMate do
       it 'should return false for a move that is not diagonal' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WB'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         expect(chess.move('c1', 'c8')).to eql(false)
         expect(chess.move('c1', 'h7')).to eql(false)
         expect(chess.move('c1', 'h8')).to eql(false)
@@ -621,7 +666,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WB'
         board[2][7] = 'BB'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'h6')
         expect(chess.board).to eql(
           [
@@ -641,7 +686,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WB'
         board[2][7] = 'WB'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'h6')
         expect(chess.board).to eql(
           [
@@ -662,7 +707,7 @@ describe ChessMate do
       it 'should update the board if the knight moves 2 horizontal, 1 vertical' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WN'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'e2')
         expect(chess.board).to eql(
           [
@@ -681,7 +726,7 @@ describe ChessMate do
       it 'should update the board if the knight moves 1 horizontal, 2 vertical' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WN'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'd3')
         expect(chess.board).to eql(
           [
@@ -700,7 +745,7 @@ describe ChessMate do
       it 'should return false if the move is invalid' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WN'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         expect(chess.move('c1', 'c8')).to eql(false)
       end
 
@@ -708,7 +753,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WN'
         board[5][3] = 'BN'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'd3')
         expect(chess.board).to eql(
           [
@@ -728,7 +773,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][2] = 'WN'
         board[5][3] = 'WN'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('c1', 'd3')
         expect(chess.board).to eql(
           [
@@ -749,7 +794,7 @@ describe ChessMate do
       it 'should update the board if the queen moves vertically' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'd8')
         expect(chess.board).to eql(
           [
@@ -768,7 +813,7 @@ describe ChessMate do
       it 'should update the board if the queen moves horizontally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'h1')
         expect(chess.board).to eql(
           [
@@ -787,7 +832,7 @@ describe ChessMate do
       it 'should update the board if the queen moves diagonally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'h5')
         expect(chess.board).to eql(
           [
@@ -806,7 +851,7 @@ describe ChessMate do
       it 'should return false if the queen makes an otherwise invalid move' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         expect(chess.move('d1', 'h8')).to eql(false)
       end
 
@@ -814,7 +859,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
         board[7][7] = 'BQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'h1')
         expect(chess.board).to eql(
           [
@@ -834,7 +879,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WQ'
         board[7][7] = 'WQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'h1')
         expect(chess.board).to eql(
           [
@@ -855,7 +900,7 @@ describe ChessMate do
       it 'should update the board if the king moves 1 space vertically' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'e2')
         expect(chess.board).to eql(
           [
@@ -874,7 +919,7 @@ describe ChessMate do
       it 'should update the board if the king moves 1 space horizontally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'f1')
         expect(chess.board).to eql(
           [
@@ -893,7 +938,7 @@ describe ChessMate do
       it 'should update the board if the king moves 1 space diagonally' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'f2')
         expect(chess.board).to eql(
           [
@@ -912,7 +957,7 @@ describe ChessMate do
       it 'should return false if the king makes an otherwise invalid move' do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         expect(chess.move('e1', 'h8')).to eql(false)
       end
 
@@ -920,7 +965,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
         board[6][4] = 'BP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'e2')
         expect(chess.board).to eql(
           [
@@ -940,7 +985,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
         board[6][4] = 'WP'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'e2')
         expect(chess.board).to eql(
           [
@@ -960,7 +1005,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
         board[7][7] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
           [
@@ -980,7 +1025,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
         board[7][0] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'c1')
         expect(chess.board).to eql(
           [
@@ -1008,7 +1053,7 @@ describe ChessMate do
         board[7][4] = 'WK'
         board[7][7] = 'WR'
         board[0][6] = 'BQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
           [
@@ -1029,7 +1074,7 @@ describe ChessMate do
         board[7][4] = 'WK'
         board[7][7] = 'WR'
         board[0][5] = 'BQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
           [
@@ -1050,7 +1095,7 @@ describe ChessMate do
         board[7][4] = 'WK'
         board[7][7] = 'WR'
         board[0][4] = 'BQ'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
           [
@@ -1070,7 +1115,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][3] = 'WK'
         board[7][7] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('d1', 'e1')
         chess.move('e1', 'g1')
         expect(chess.board).to eql(
@@ -1091,7 +1136,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[7][4] = 'WK'
         board[7][7] = 'WR'
-        chess = ChessMate.new(board)
+        chess = ChessMate.new(board: board)
         chess.move('h1', 'g1')
         chess.move('g1', 'h1')
         chess.move('e1', 'g1')
@@ -1117,7 +1162,7 @@ describe ChessMate do
       @board[7][4] = 'WK'
       @board[0][4] = 'BK'
       @board[0][3] = 'BQ'
-      @chess = ChessMate.new(@board)
+      @chess = ChessMate.new(board: @board)
     end
     it 'should return true if the moving color is in check after the move' do
       expect(@chess.in_check_after_move?([7, 4], [7, 3])).to eql(true)
@@ -1143,7 +1188,7 @@ describe ChessMate do
       board[6][4] = 'BQ'
       board[3][4] = 'BK'
       board[4][4] = 'BR'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.in_check_after_move?([7, 4], [6, 4])).to eql(true)
     end
   end
@@ -1153,7 +1198,7 @@ describe ChessMate do
       board = Array.new(8) { Array.new(8, nil) }
       board[7][4] = 'WK'
       board[0][4] = 'BK'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.any_valid_moves?('W')).to eql(true)
     end
 
@@ -1163,7 +1208,7 @@ describe ChessMate do
       board[6][4] = 'BQ'
       board[3][4] = 'BK'
       board[4][4] = 'BR'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.any_valid_moves?('W')).to eql(false)
     end
   end
@@ -1175,7 +1220,7 @@ describe ChessMate do
       board[6][4] = 'BQ'
       board[3][4] = 'BK'
       board[4][4] = 'BR'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.checkmate?('W')).to eql(true)
     end
 
@@ -1192,7 +1237,7 @@ describe ChessMate do
       board[5][3] = 'BQ'
       board[5][4] = 'BK'
       board[4][5] = 'BR'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.draw?('W')).to eql(true)
     end
 
@@ -1207,7 +1252,7 @@ describe ChessMate do
       board[6][3] = 'BQ'
       board[5][4] = 'BK'
       board[4][5] = 'BR'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.draw?('W')).to eql(false)
     end
   end
@@ -1216,14 +1261,14 @@ describe ChessMate do
     it 'should return true if white piece is on last rank' do
       board = Array.new(8) { Array.new(8, nil) }
       board[0][0] = 'WP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.promote?([0, 0])).to eql(true)
     end
 
     it 'should return true if black piece is on last rank' do
       board = Array.new(8) { Array.new(8, nil) }
       board[7][0] = 'BP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.promote?([7, 0])).to eql(true)
     end
 
@@ -1231,7 +1276,7 @@ describe ChessMate do
       board = Array.new(8) { Array.new(8, nil) }
       board[1][0] = 'WP'
       board[6][0] = 'BP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.promote?([1, 0])).to eql(false)
       expect(chess.promote?([6, 0])).to eql(false)
     end
@@ -1241,14 +1286,14 @@ describe ChessMate do
     it 'should return nil if piece cannot promote' do
       board = Array.new(8) { Array.new(8, nil) }
       board[1][0] = 'WP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.promote!([1, 0], 'queen')).to eql(nil)
     end
 
     it 'should return nil for invalid/junk promotion data' do
       board = Array.new(8) { Array.new(8, nil) }
       board[0][0] = 'WP'
-      chess = ChessMate.new(board)
+      chess = ChessMate.new(board: board)
       expect(chess.promote!([0, 0], 'king')).to eql(nil)
     end
 
@@ -1256,7 +1301,7 @@ describe ChessMate do
       before :each do
         board = Array.new(8) { Array.new(8, nil) }
         board[0][0] = 'WP'
-        @chess = ChessMate.new(board)
+        @chess = ChessMate.new(board: board)
       end
 
       it 'queen' do
@@ -1320,7 +1365,7 @@ describe ChessMate do
       board[0][4] = 'BK'
       board[0][0] = 'BR'
       board[0][7] = 'BR'
-      @chess = ChessMate.new(board)
+      @chess = ChessMate.new(board: board)
     end
     context 'new game' do
       it 'should return true for both king/queenside for both colors' do
