@@ -8,20 +8,20 @@ Dir['../lib/pieces/*.rb'].each { |file| require file }
 
 describe ChessMate do
   describe 'initialize method' do
-    context "should accept custom parameters" do
-      it "for board" do
+    context 'should accept custom parameters' do
+      it 'for board' do
         board = Array.new(8) { Array.new(8, nil) }
         chess = ChessMate.new(board: board)
         expect(chess.board).to eql(board)
       end
 
-      it "for en_passant" do
+      it 'for en_passant' do
         en_passant = { white: true, black: nil }
         chess = ChessMate.new(en_passant: en_passant)
         expect(chess.en_passant).to eql(en_passant)
       end
 
-      it "for castling" do
+      it 'for castling' do
         castling = {
           white: {
             kingside: false,
@@ -36,21 +36,21 @@ describe ChessMate do
         expect(chess.castling).to eql(castling)
       end
 
-      it "for turn" do
+      it 'for turn' do
         turn = rand(10)
         chess = ChessMate.new(turn: turn)
         expect(chess.turn).to eql(turn)
       end
 
-      it "for in_check" do
+      it 'for in_check' do
         in_check = { "white": true, "black": false }
         chess = ChessMate.new(in_check: in_check)
         expect(chess.in_check).to eql(in_check)
       end
     end
 
-    context "no custom parameters" do
-      it "should generate a default game" do
+    context 'no custom parameters' do
+      it 'should generate a default game' do
         chess = ChessMate.new
         expect(chess.board).to eql(DEFAULT[:board])
         expect(chess.turn).to eql(DEFAULT[:turn])

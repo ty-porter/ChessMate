@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 DEFAULT = {
   board: [
     %w[BR BN BB BQ BK BB BN BR],

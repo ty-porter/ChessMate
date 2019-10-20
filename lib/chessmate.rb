@@ -15,14 +15,18 @@ class ChessMate
 
   attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
 
-  def initialize(board:nil, turn:nil, promotable:nil, en_passant:nil, castling:nil, in_check:nil)
+  def initialize(board: nil,
+                 turn: nil,
+                 promotable: nil,
+                 en_passant: nil,
+                 castling: nil,
+                 in_check: nil)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
     @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
     @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
     @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
     @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
-    # binding.pry
   end
 
   def update(orig, dest = nil)
