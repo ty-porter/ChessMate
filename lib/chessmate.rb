@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'deep_dup'
+
 class ChessMate
   require 'helpers/notation_parser'
   require 'pieces/pawn'
@@ -8,44 +10,22 @@ class ChessMate
   require 'pieces/knight'
   require 'pieces/queen'
   require 'pieces/king'
+  require 'helpers/default'
 
   attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
 
-  def initialize(board = nil, turn = nil)
-    @board = if board.nil?
-               [
-                 %w[BR BN BB BQ BK BB BN BR],
-                 %w[BP BP BP BP BP BP BP BP],
-                 [nil, nil, nil, nil, nil, nil, nil, nil],
-                 [nil, nil, nil, nil, nil, nil, nil, nil],
-                 [nil, nil, nil, nil, nil, nil, nil, nil],
-                 [nil, nil, nil, nil, nil, nil, nil, nil],
-                 %w[WP WP WP WP WP WP WP WP],
-                 %w[WR WN WB WQ WK WB WN WR]
-               ]
-             else
-               board
-             end
-
-    @turn = if turn.nil?
-              1
-            else
-              turn
-            end
-
-    @promotable = nil
-    @en_passant = { white: nil, black: nil }
-    @castling = {
-      white: {
-        kingside: true,
-        queenside: true
-      },
-      black: {
-        kingside: true,
-        queenside: true
-      }
-    }
-    @in_check = { "white": false, "black": false }
+  def initialize(board: nil,
+                 turn: nil,
+                 promotable: nil,
+                 en_passant: nil,
+                 castling: nil,
+                 in_check: nil)
+    @board = board || DEFAULT[:board].map(&:dup)
+    @turn = turn || DEFAULT[:turn]
+    @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
+    @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
+    @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
+    @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
   end
 
   def update(orig, dest = nil)

@@ -24,3 +24,6 @@ Style/Documentation:
 
 Metrics/BlockNesting:
   Max: 5
+
+Metrics/ParameterLists:
+  Enabled: false
