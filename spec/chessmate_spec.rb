@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pry'
 require 'spec_helper'
 require_relative '../lib/chessmate'
 require_relative '../lib/helpers/notation_parser'
@@ -392,6 +393,26 @@ describe ChessMate do
             [nil, nil, nil, nil, nil, nil, nil, nil],
             [nil, nil, nil, nil, 'WP', nil, nil, nil],
             [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil]
+          ]
+        )
+      end
+
+      it 'should not allow for capturing forwards' do
+        board = Array.new(8) { Array.new(8, nil) }
+        board[5][4] = 'WP'
+        board[4][4] = 'BP'
+        chess = ChessMate.new(board: board)
+        chess.move('e3', 'e4')
+        expect(chess.board).to eql(
+          [
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, 'BP', nil, nil, nil],
+            [nil, nil, nil, nil, 'WP', nil, nil, nil],
             [nil, nil, nil, nil, nil, nil, nil, nil],
             [nil, nil, nil, nil, nil, nil, nil, nil]
           ]
