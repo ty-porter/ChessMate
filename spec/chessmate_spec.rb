@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry'
 require 'spec_helper'
 require_relative '../lib/chessmate'
 require_relative '../lib/helpers/notation_parser'
