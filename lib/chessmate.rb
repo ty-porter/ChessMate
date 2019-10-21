@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'deep_dup'
+require 'pry'
 
 class ChessMate
   require 'helpers/notation_parser'
@@ -130,6 +131,7 @@ class ChessMate
     allowed_turn = piece[0] == 'W' ? :odd? : :even?
 
     return false unless @allow_out_of_turn || @turn.send(allowed_turn)
+
 
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
