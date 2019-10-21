@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'deep_dup'
-require 'pry'
 
 class ChessMate
   require 'helpers/notation_parser'
