@@ -132,7 +132,6 @@ class ChessMate
 
     return false unless @allow_out_of_turn || @turn.send(allowed_turn)
 
-
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
                  when 'P'
