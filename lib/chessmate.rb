@@ -12,20 +12,29 @@ class ChessMate
   require 'pieces/king'
   require 'helpers/default'
 
-  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling
+  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling, :allow_out_of_turn
 
   def initialize(board: nil,
                  turn: nil,
                  promotable: nil,
                  en_passant: nil,
                  castling: nil,
-                 in_check: nil)
+                 in_check: nil,
+                 allow_out_of_turn: nil)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
     @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
     @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
     @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
     @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
+
+    @allow_out_of_turn = if allow_out_of_turn.nil?
+                           ENV['TEST'] == 'true' || false
+                         elsif [true, false].include?(allow_out_of_turn)
+                           allow_out_of_turn
+                         else
+                           false
+                         end
   end
 
   def update(orig, dest = nil)
@@ -118,6 +127,9 @@ class ChessMate
 
     piece = @board[orig_y][orig_x]
     piece_type = piece[1]
+    allowed_turn = piece[0] == 'W' ? :odd? : :even?
+
+    return false unless @allow_out_of_turn || @turn.send(allowed_turn)
 
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
