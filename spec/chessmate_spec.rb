@@ -47,6 +47,11 @@ describe ChessMate do
         chess = ChessMate.new(in_check: in_check)
         expect(chess.in_check).to eql(in_check)
       end
+
+      it 'for allow_out_of_turn' do
+        chess = ChessMate.new(allow_out_of_turn: true)
+        expect(chess.allow_out_of_turn).to eql(true)
+      end
     end
 
     context 'no custom parameters' do
@@ -205,6 +210,21 @@ describe ChessMate do
   describe 'move method' do
     before :each do
       @chess = ChessMate.new
+    end
+
+    context 'allow out of turn' do
+      it 'by default should not let players move out of turn' do
+        chess = ChessMate.new(allow_out_of_turn: false)
+        expect(chess.move('a7', 'a6')).to eql(false)
+        expect(chess.board).to eql(DEFAULT[:board])
+        expect(chess.move('a2', 'a3')).to eql(true)
+        expect(chess.move('a3', 'a4')).to eql(false)
+      end
+
+      it 'option to allow players to move out of turn' do
+        chess = ChessMate.new(allow_out_of_turn: true)
+        expect(chess.move('a7', 'a6')).to eql(true)
+      end
     end
 
     it 'should test that the king is not in check before moving' do
