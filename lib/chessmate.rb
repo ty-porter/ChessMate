@@ -34,21 +34,37 @@ class ChessMate
     dest_y = dest[0]
     dest_x = dest[1]
     piece_type = @board[orig_y][orig_x]
+    piece_color = piece_type[0] == 'W' ? :white : :black
     opposite_color = piece_type[0] == 'W' ? :black : :white
     direction = opposite_color == :white ? -1 : 1
 
-    if piece_type[1] == 'P' && @en_passant[opposite_color] == [dest_y + direction, dest_x]
-      en_passant = true
-      en_passant_coords = [@en_passant[opposite_color][0], @en_passant[opposite_color][1]]
-    end
+    @en_passant[piece_color] = nil if @en_passant[piece_color]
 
-    if piece_type[1] == 'K' && (orig_x - dest_x).abs == 2
-      castle = true
-      old_rook_x_position = orig_x < dest_x ? 7 : 0
-      new_rook_x_position = orig_x < dest_x ? 5 : 3
+    case piece_type[1]
+    when 'P'
+      @en_passant[piece_color] = dest if (orig_y - dest_y).abs > 1
+      if @en_passant[opposite_color] == [dest_y + direction, dest_x]
+        en_passant = true
+        en_passant_coords = @en_passant[opposite_color]
+      end
+    when 'K'
+      @castling[piece_color].keys.each do |side|
+        @castling[piece_color][side] = false
+      end
+      if (orig_x - dest_x).abs == 2
+        castle = true
+        old_rook_x_position = orig_x < dest_x ? 7 : 0
+        new_rook_x_position = orig_x < dest_x ? 5 : 3
+      end
+    when 'R'
+      if [0, 7].include?(orig_x)
+        direction = orig_x == 7 ? :kingside : :queenside
+        @castling[piece_color][direction] = false
+      end
     end
 
     @board[en_passant_coords[0]][en_passant_coords[1]] = nil if en_passant
+
     if castle
       @board[orig_y][old_rook_x_position] = nil
       @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
@@ -57,6 +73,8 @@ class ChessMate
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
 
+    @promotable = dest if piece_type[1] == 'P' && promote?(dest)
+    @in_check = in_check?
     @turn += 1
   end
 
@@ -79,14 +97,14 @@ class ChessMate
 
         piece_pos = NotationParser.encode_notation([y, x])
         if col[0] == 'W' && bk_pos
-          black_in_check = true if move(piece_pos, bk_pos, true)
+          black_in_check = true if move(piece_pos, bk_pos, test: true)
         elsif col[0] == 'B' && wk_pos
-          white_in_check = true if move(piece_pos, wk_pos, true)
+          white_in_check = true if move(piece_pos, wk_pos, test: true)
         end
       end
     end
 
-    { "white": white_in_check, "black": black_in_check }
+    { white: white_in_check, black: black_in_check }
   end
 
   def move(orig, dest, test = false, test_board = nil)
@@ -101,18 +119,10 @@ class ChessMate
     piece = @board[orig_y][orig_x]
     piece_type = piece[1]
 
-    piece_color = if piece[0].downcase == 'w'
-                    :white
-                  elsif piece[0].downcase == 'b'
-                    :black
-                  end
-
-    @en_passant[piece_color] = nil if @en_passant[piece_color]
-
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
                  when 'P'
-                   Pawn.move_is_valid?(orig_pos, dest_pos, board, @en_passant)
+                   Pawn.move_is_valid?(orig_pos, dest_pos, board, @en_passant.dup)
                  when 'R'
                    Rook.move_is_valid?(orig_pos, dest_pos, board)
                  when 'B'
@@ -122,37 +132,16 @@ class ChessMate
                  when 'Q'
                    Queen.move_is_valid?(orig_pos, dest_pos, board)
                  when 'K'
-                   King.move_is_valid?(orig_pos, dest_pos, board, @castling)
+                   King.move_is_valid?(orig_pos, dest_pos, board, @castling.dup)
                  else
                    false
                  end
 
-    unless test
-      @in_check = in_check?
-      in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
-      if valid_move
-        case piece_type
-        when 'P'
-          @en_passant[piece_color] = dest_pos if (orig_pos[0] - dest_pos[0]).abs > 1
-        when 'K'
-          @castling[piece_color].keys.each do |direction|
-            @castling[piece_color][direction] = false
-          end
-        when 'R'
-          if [0, 7].include?(orig_x)
-            direction = orig_x == 7 ? :kingside : :queenside
-            @castling[piece_color][direction] = false
-          end
-        end
-      end
-    end
+    in_check_after_move = in_check_after_move?(orig_pos, dest_pos) unless test
 
-    if valid_move && !test && !in_check_after_move
-      update(orig_pos, dest_pos)
-      @promotable = dest_pos if piece_type == 'P' && promote?(dest_pos)
-    end
+    update(orig_pos, dest_pos) if valid_move && !test && !in_check_after_move
 
-    valid_move && !@in_check[piece_color] && !in_check_after_move
+    valid_move && !in_check_after_move
   end
 
   def in_check_after_move?(orig, dest)

@@ -14,7 +14,7 @@ DEFAULT = {
   turn: 1,
   promotable: nil,
   en_passant: { white: nil, black: nil },
-  in_check: { "white": false, "black": false },
+  in_check: { white: false, black: false },
   castling: {
     white: {
       kingside: true,

@@ -32,7 +32,6 @@ class Pawn < Piece
     basic_move = ((orig_y - dest_y) * direction == 1 && orig_x == dest_x)
     move_double_on_first_turn = (orig_y - dest_y == (2 * direction)) && (orig_x == dest_x)
 
-    # binding.pry
     not_obstructed && (move_double_on_first_turn || basic_move)
   end
 
