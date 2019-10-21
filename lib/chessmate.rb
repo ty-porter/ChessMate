@@ -48,8 +48,8 @@ class ChessMate
         en_passant_coords = @en_passant[opposite_color]
       end
     when 'K'
-      @castling[piece_color].keys.each do |direction|
-        @castling[piece_color][direction] = false
+      @castling[piece_color].keys.each do |side|
+        @castling[piece_color][side] = false
       end
       if (orig_x - dest_x).abs == 2
         castle = true
@@ -119,12 +119,6 @@ class ChessMate
     piece = @board[orig_y][orig_x]
     piece_type = piece[1]
 
-    piece_color = if piece[0].downcase == 'w'
-                    :white
-                  elsif piece[0].downcase == 'b'
-                    :black
-                  end
-
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
                  when 'P'
@@ -145,9 +139,7 @@ class ChessMate
 
     in_check_after_move = in_check_after_move?(orig_pos, dest_pos) unless test
 
-    if valid_move && !test && !in_check_after_move
-      update(orig_pos, dest_pos)
-    end
+    update(orig_pos, dest_pos) if valid_move && !test && !in_check_after_move
 
     valid_move && !in_check_after_move
   end

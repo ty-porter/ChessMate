@@ -25,4 +25,4 @@ DEFAULT = {
       queenside: true
     }
   }
-}
+}.freeze

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chessmate (0.6.1)
+    chessmate (0.6.2)
       deep_dup (~> 0)
 
 GEM

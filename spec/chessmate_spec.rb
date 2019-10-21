@@ -595,11 +595,11 @@ describe ChessMate do
         )
       end
 
-      it "should work if custom en_passant is passed in" do
+      it 'should work if custom en_passant is passed in' do
         board = Array.new(8) { Array.new(8, nil) }
         board[3][0] = 'BP'
         board[3][1] = 'WP'
-        en_passant =  { white: nil, black: [3,0] }
+        en_passant =  { white: nil, black: [3, 0] }
         chess = ChessMate.new(board: board, en_passant: en_passant)
         chess.move('b5', 'a6')
         expect(chess.board).to eql(
@@ -1253,7 +1253,7 @@ describe ChessMate do
       expect(test_board).to eql(@chess.board)
     end
 
-    it "should not mutate other game parameters" do
+    it 'should not mutate other game parameters' do
       chess = ChessMate.new
       chess.in_check_after_move?([6, 4], [5, 4])
       DEFAULT.keys.each do |key|
