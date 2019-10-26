@@ -149,7 +149,7 @@ class ChessMate
                    false
                  end
     unless test
-      in_check_after_move = in_check_after_move?(orig_pos, dest_pos) 
+      in_check_after_move = in_check_after_move?(orig_pos, dest_pos)
       update(orig_pos, dest_pos) if valid_move && !test && !in_check_after_move
     end
 
