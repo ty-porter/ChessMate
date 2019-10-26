@@ -129,7 +129,7 @@ class ChessMate
     piece_type = piece[1]
     allowed_turn = piece[0] == 'W' ? :odd? : :even?
 
-    return false unless @allow_out_of_turn || @turn.send(allowed_turn)
+    return false unless @allow_out_of_turn || @turn.send(allowed_turn) || test
 
     board = test_board.nil? ? @board : test_board
     valid_move = case piece_type
@@ -148,10 +148,10 @@ class ChessMate
                  else
                    false
                  end
-
-    in_check_after_move = in_check_after_move?(orig_pos, dest_pos) unless test
-
-    update(orig_pos, dest_pos) if valid_move && !test && !in_check_after_move
+    unless test
+      in_check_after_move = in_check_after_move?(orig_pos, dest_pos) 
+      update(orig_pos, dest_pos) if valid_move && !test && !in_check_after_move
+    end
 
     valid_move && !in_check_after_move
   end
