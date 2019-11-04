@@ -58,7 +58,7 @@ Other functions you might call:
 
 ```
 game.promote?(square)           # Check if a square is capable of pawn promotion
-game.promote!(square, pawn)     # Promote a promotable pawn, accepts 'rook'/'knight'/'bishop'/'queen'
+game.promote!(square, piece)     # Promote a promotable pawn, accepts 'rook'/'knight'/'bishop'/'queen'
 game.in_check?                  # Determine if either color is currently in check
 game.checkmate?(color)          # Determine if the game is over, accepts 'W'/'B'
 game.draw?(color)               # Same as checkmate, for draw
