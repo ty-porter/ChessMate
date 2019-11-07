@@ -19,7 +19,7 @@ ChessMate was built in around 2 months to be as easy to use as possible to quick
 
 ChessMate is designed to be a backend tool to validate possible chess moves. Therefore, it is intentionally as agnostic to your frontend as possible to integrate into many different frameworks. Because it's designed to be flexible, it even supports custom game boards and can allow out-of-turn movement!
 
-Click [here](http://chessmate-demo.herokuapp.com/) to play with a Rails app running ChessMate!
+Click [here](http://chessmate-demo.herokuapp.com/) to play with a Rails app running ChessMate! (Or check out the source code [here](https://github.com/pawptart/ChessTest).)
 
 <p align="center">
   <img src="https://i.imgur.com/vyQjL4Y.png">
