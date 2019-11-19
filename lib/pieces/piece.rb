@@ -2,10 +2,8 @@
 
 class Piece
   def self.obstructed?(orig, dest, board)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
 
     if orig_y == dest_y
 
@@ -45,10 +43,8 @@ class Piece
   end
 
   def self.capturable?(orig, dest, board)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     orig_piece = board[orig_y][orig_x]
     dest_piece = board[dest_y][dest_x]
 

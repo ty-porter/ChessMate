@@ -11,8 +11,16 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
   require 'helpers/default'
+  require 'helpers/logger'
 
-  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling, :allow_out_of_turn
+  attr_reader :board,
+              :turn,
+              :in_check,
+              :promotable,
+              :en_passant,
+              :castling,
+              :allow_out_of_turn,
+              :move_history
 
   def initialize(board: nil,
                  turn: nil,
@@ -20,7 +28,8 @@ class ChessMate
                  en_passant: nil,
                  castling: nil,
                  in_check: nil,
-                 allow_out_of_turn: nil)
+                 allow_out_of_turn: nil,
+                 move_history: nil)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
     @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
@@ -35,13 +44,12 @@ class ChessMate
                          else
                            false
                          end
+    @move_history = move_history || []
   end
 
   def update(orig, dest = nil)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece_type = @board[orig_y][orig_x]
     piece_color = piece_type[0] == 'W' ? :white : :black
     opposite_color = piece_type[0] == 'W' ? :black : :white
@@ -78,6 +86,9 @@ class ChessMate
       @board[orig_y][old_rook_x_position] = nil
       @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
     end
+
+    logger = Logger.new(orig, dest, @board)
+    @move_history << logger.log_move
 
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
@@ -159,10 +170,8 @@ class ChessMate
   def in_check_after_move?(orig, dest)
     test_board = @board.map(&:dup)
 
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece = test_board[orig_y][orig_x]
     piece_type = test_board[orig_y][orig_x]
     opposite_color = piece_type[0] == 'W' ? :black : :white

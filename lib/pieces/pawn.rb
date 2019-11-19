@@ -6,10 +6,8 @@ class Pawn < Piece
   def self.move_is_valid?(orig, dest, board, en_passant)
     return true if en_passant(orig, dest, board, en_passant)
 
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece_type = board[orig_y][orig_x]
     piece_color = piece_type[0].downcase
 
@@ -36,10 +34,8 @@ class Pawn < Piece
   end
 
   def self.en_passant(orig, dest, board, en_passant)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece_type = board[orig_y][orig_x]
     opposite_color = piece_type[0].downcase == 'w' ? :black : :white
     direction = opposite_color == :white ? -1 : 1

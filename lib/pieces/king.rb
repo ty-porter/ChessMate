@@ -16,10 +16,8 @@ class King < Piece
   end
 
   def self.valid_castling_move?(orig, dest, board, castling)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
 
     return false if orig_y != dest_y || (orig_x - dest_x).abs != 2
 
