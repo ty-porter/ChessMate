@@ -24,15 +24,16 @@ class ChessMate
 
   def initialize(board: nil,
                  turn: nil,
-                 promotable: nil,
+                 promotable: false,
                  en_passant: nil,
                  castling: nil,
                  in_check: nil,
                  allow_out_of_turn: nil,
-                 move_history: nil)
+                 move_history: nil,
+                 ignore_logging: false)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
-    @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
+    @promotable = promotable 
     @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
     @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
     @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
@@ -45,6 +46,7 @@ class ChessMate
                            false
                          end
     @move_history = move_history || []
+    @ignore_logging = ignore_logging
   end
 
   def update(orig, dest = nil)
@@ -87,13 +89,16 @@ class ChessMate
       @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
     end
 
-    logger = Logger.new(orig, dest, @board)
-    @move_history << logger.log_move
+    @promotable = dest if piece_type[1] == "P" && promote?(orig)
+
+    if !@ignore_logging && !@promotable
+      logger = Logger.new(orig, dest, @board)
+      @move_history << logger.log_move
+    end
 
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
 
-    @promotable = dest if piece_type[1] == 'P' && promote?(dest)
     @in_check = in_check?
     @turn += 1
   end
@@ -245,8 +250,8 @@ class ChessMate
   def promote?(square)
     square_y = square[0]
     square_x = square[1]
-    piece = @board[square_y][square_x][0]
-    promote_column = piece.downcase == 'w' ? 0 : 7
+    piece_color = @board[square_y][square_x][0]
+    promote_column = piece_color.downcase == 'w' ? 1 : 6
     promote_column == square_y
   end
 
@@ -255,7 +260,7 @@ class ChessMate
     square_x = square[1]
 
     old_piece = @board[square_y][square_x]
-    return nil if old_piece.nil? || !promote?(square)
+    return nil if old_piece.nil? || @promotable != [square_y, square_x]
 
     case piece.downcase
     when 'rook'

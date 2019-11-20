@@ -5,7 +5,7 @@ require 'chessmate'
 require 'pry'
 
 class Logger
-  def initialize(orig, dest, board, en_passant = false)
+  def initialize(orig, dest, board, en_passant: false, promotion_type: nil)
     @orig = orig
     @dest = dest
     @board = board
@@ -17,6 +17,8 @@ class Logger
     @piece = @board[@orig_y][@orig_x]
 
     @piece_color, @piece_type = @piece.chars
+
+    @promotion_type = promotion_type
   end
 
   def log_move
@@ -28,7 +30,7 @@ class Logger
     capture = @board[@dest_y][@dest_x] || @en_passant ? 'x' : ''
     destination = NotationParser.encode_notation(@dest)
 
-    origin + capture + destination
+    origin + capture + destination + promotion(@promotion_type) + check_or_mate
   end
 
   private
@@ -65,5 +67,26 @@ class Logger
       ambiguous_encoded += encoded_origin_chars[i] if value
     end
     ambiguous_encoded
+  end
+
+  def check_or_mate
+    game = ChessMate.new(board: @board, ignore_logging: true)
+    encoded_orig = NotationParser.encode_notation(@orig)
+    encoded_dest = NotationParser.encode_notation(@dest)
+    opposite_color_letter = @piece_color == "W" ? "B" : "W"
+    opposite_color_string = opposite_color_letter == 'W' ? 'white' : 'black'
+
+    game.move(encoded_orig, encoded_dest)
+    checkmate = game.checkmate?(opposite_color_letter)
+    check = game.in_check?[opposite_color_string.to_sym]
+
+    return '#' if checkmate
+    return '+' if check
+    
+    ""
+  end
+
+  def promotion(promotion_type)
+    ''
   end
 end
