@@ -37,6 +37,17 @@ describe 'Logger' do
       [nil, nil, nil, nil, nil, nil, nil, nil],
       ['WR', nil, nil, nil, nil, nil, nil, 'WQ']
     ]
+
+    @specialty_moves_board = [
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      ['WP', nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      ['WR', nil, nil, nil, 'WK', nil, nil, 'WR']
+    ]
   end
 
   context 'pawn moves' do
@@ -48,6 +59,11 @@ describe 'Logger' do
     it 'should log capturing moves' do
       logger = Logger.new([6, 0], [5, 1], @capture_moves_board)
       expect(logger.log_move).to eql('axb3')
+    end
+
+    it 'should log en passant moves' do
+      logger = Logger.new([3, 6], [2, 7], @capture_moves_board, true)
+      expect(logger.log_move).to eql('gxh6')
     end
   end
 
@@ -118,6 +134,21 @@ describe 'Logger' do
     it 'should handle knights/bishops/queens with ability to move to dest square' do
       logger = Logger.new([2, 3], [0, 1], @ambiguous_moves_board)
       expect(logger.log_move).to eql('Bdb8')
+    end
+  end
+
+  context 'specialty moves' do
+    it 'should log kingside castles' do
+      logger = Logger.new([7, 4], [7, 6], @specialty_moves_board)
+      expect(logger.log_move).to eql('0-0')
+    end
+
+    it 'should log queenside castles' do
+      logger = Logger.new([7, 4], [7, 2], @specialty_moves_board)
+      expect(logger.log_move).to eql('0-0-0')
+    end
+
+    it 'should log pawn promotion' do
     end
   end
 end

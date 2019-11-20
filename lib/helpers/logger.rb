@@ -20,6 +20,10 @@ class Logger
   end
 
   def log_move
+    if @piece_type == 'K' && (@orig_x - @dest_x).abs > 1
+      return (@dest_x - @orig_x).positive? ? '0-0' : '0-0-0'
+    end
+
     origin = encode_origin
     capture = @board[@dest_y][@dest_x] || @en_passant ? 'x' : ''
     destination = NotationParser.encode_notation(@dest)
