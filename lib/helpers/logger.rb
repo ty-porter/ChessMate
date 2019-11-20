@@ -30,33 +30,19 @@ class Logger
   private
 
   def encode_origin
-    file = @board.each.map.with_index { |row, i| row[@orig_x] if i != @orig_y }
-    rank = @board[@orig_y].map.with_index { |col, i| col if i != @orig_x }
+    notation_required = [false, false]
+    game = ChessMate.new(board: @board)
+    encoded_dest = NotationParser.encode_notation(@dest)
 
-    ambiguous_in_file = file.include?(@piece)
-    ambiguous_in_rank = rank.include?(@piece)
+    @board.each_with_index do |row, y|
+      row.each_with_index do |col, x|
+        next unless @piece == col && [@orig_y, @orig_x] != [y, x]
 
-    if ambiguous_in_file || ambiguous_in_rank
-      notation_required = [false, false]
+        encoded_orig = NotationParser.encode_notation([y, x])
 
-      game = ChessMate.new(board: @board)
-      encoded_dest = NotationParser.encode_notation(@dest)
-
-      if ambiguous_in_file
-        file_ambigs = file.map.with_index { |row, i| i if row == @piece }.compact
-
-        file_ambigs.each do |y|
-          encoded_orig = NotationParser.encode_notation([y, @orig_x])
-          notation_required[1] = true if game.move(encoded_orig, encoded_dest, true)
-        end
-      end
-
-      if ambiguous_in_rank
-        rank_ambigs = rank.map.with_index { |col, i| i if col == @piece }.compact
-
-        rank_ambigs.each do |x|
-          encoded_orig = NotationParser.encode_notation([@orig_y, x])
-          notation_required[0] = true if game.move(encoded_orig, encoded_dest, true)
+        if game.move(encoded_orig, encoded_dest, true)
+          notation_required[0] = true if @orig_y == y || (@orig_y != y && @orig_x != x)
+          notation_required[1] = true if @orig_x == x
         end
       end
     end

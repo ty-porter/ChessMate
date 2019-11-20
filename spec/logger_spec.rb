@@ -106,8 +106,8 @@ describe 'Logger' do
     end
 
     it 'should add rank info to log moves with pieces in same rank' do
-      logger = Logger.new([7, 0], [5, 0], @ambiguous_moves_board)
-      expect(logger.log_move).to eql('R1a3')
+      logger = Logger.new([0, 3], [0, 5], @ambiguous_moves_board)
+      expect(logger.log_move).to eql('Rdf8')
     end
 
     it 'should add file and rank info to log moves with multiple pieces in same file and rank' do
