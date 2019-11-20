@@ -48,9 +48,9 @@ describe 'Logger' do
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       ['WR', nil, nil, nil, 'WK', nil, nil, 'WR']
-		]
-		
-		@check_board = [
+    ]
+
+    @check_board = [
       [nil, nil, nil, 'BQ', nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -59,8 +59,7 @@ describe 'Logger' do
       ['BN', nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, 'WP', nil, 'WP', nil, nil],
       [nil, nil, nil, 'WR', 'WK', 'WR', nil, nil]
-		]
-		
+    ]
   end
 
   context 'pawn moves' do
@@ -161,23 +160,23 @@ describe 'Logger' do
       expect(logger.log_move).to eql('0-0-0')
     end
 
-		it 'should log pawn promotion' do
-			%w[R N B Q].each do |piece|
-				logger = Logger.new(nil, nil, nil, promotion_type: piece)
-				expect(logger.log_promotion).to eql("=(#{piece})")
-			end
+    it 'should log pawn promotion' do
+      %w[R N B Q].each do |piece|
+        logger = Logger.new(nil, nil, nil, promotion_type: piece)
+        expect(logger.log_promotion).to eql("=(#{piece})")
+      end
     end
-	end
-	
-	context 'game status indications' do
-		 it 'should log check' do
-			logger = Logger.new([5, 0], [6, 2], @check_board)
-      expect(logger.log_move).to eql('Nc2+')
-		 end
+  end
 
-		 it 'should log checkmate' do
-			logger = Logger.new([0, 3], [0, 4], @check_board)
+  context 'game status indications' do
+    it 'should log check' do
+      logger = Logger.new([5, 0], [6, 2], @check_board)
+      expect(logger.log_move).to eql('Nc2+')
+    end
+
+    it 'should log checkmate' do
+      logger = Logger.new([0, 3], [0, 4], @check_board)
       expect(logger.log_move).to eql('Qe8#')
-		 end
-	end
+    end
+  end
 end

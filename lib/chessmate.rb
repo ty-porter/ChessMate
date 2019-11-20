@@ -33,7 +33,7 @@ class ChessMate
                  ignore_logging: false)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
-    @promotable = promotable 
+    @promotable = promotable
     @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
     @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
     @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
@@ -89,9 +89,9 @@ class ChessMate
       @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
     end
 
-    @promotable = dest if piece_type[1] == "P" && promote?(orig)
+    @promotable = dest if piece_type[1] == 'P' && promote?(orig)
 
-    if !@ignore_logging
+    unless @ignore_logging
       logger = Logger.new(orig, dest, @board)
       @move_history << logger.log_move
     end
@@ -277,9 +277,9 @@ class ChessMate
 
     @board[square_y][square_x] = old_piece[0] + piece_type
 
-    if !@ignore_logging
-      logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
-      @move_history[-1] += logger.log_promotion
-    end
+    return if @ignore_logging
+
+    logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
+    @move_history[-1] += logger.log_promotion
   end
 end

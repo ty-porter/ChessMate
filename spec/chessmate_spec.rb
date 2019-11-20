@@ -1382,7 +1382,7 @@ describe ChessMate do
   end
 
   describe 'promote! method' do
-    it 'should return nil if piece cannot promote'do
+    it 'should return nil if piece cannot promote' do
       board = Array.new(8) { Array.new(8, nil) }
       board[1][0] = 'WP'
       chess = ChessMate.new(board: board)
@@ -1401,7 +1401,7 @@ describe ChessMate do
         board = Array.new(8) { Array.new(8, nil) }
         board[1][0] = 'WP'
         @chess = ChessMate.new(board: board)
-        @chess.move('a7','a8')
+        @chess.move('a7', 'a8')
       end
 
       it 'queen' do

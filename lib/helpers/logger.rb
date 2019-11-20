@@ -2,7 +2,6 @@
 
 require 'helpers/notation_parser'
 require 'chessmate'
-require 'pry'
 
 class Logger
   def initialize(orig, dest, board, en_passant: false, promotion_type: nil, history: nil)
@@ -10,6 +9,7 @@ class Logger
     @history = history
 
     return unless orig && dest && board
+
     @orig = orig
     @dest = dest
     @board = board
@@ -33,7 +33,7 @@ class Logger
   end
 
   def log_promotion
-    @promotion_type ? "=(#{@promotion_type})" : ""
+    @promotion_type ? "=(#{@promotion_type})" : ''
   end
 
   private
@@ -76,7 +76,7 @@ class Logger
     game = ChessMate.new(board: @board, ignore_logging: true)
     encoded_orig = NotationParser.encode_notation(@orig)
     encoded_dest = NotationParser.encode_notation(@dest)
-    opposite_color_letter = @piece_color == "W" ? "B" : "W"
+    opposite_color_letter = @piece_color == 'W' ? 'B' : 'W'
     opposite_color_string = opposite_color_letter == 'W' ? 'white' : 'black'
 
     game.move(encoded_orig, encoded_dest)
@@ -85,7 +85,7 @@ class Logger
 
     return '#' if checkmate
     return '+' if check
-    
-    ""
+
+    ''
   end
 end
