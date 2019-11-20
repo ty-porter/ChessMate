@@ -5,20 +5,19 @@ require 'chessmate'
 require 'pry'
 
 class Logger
-  def initialize(orig, dest, board, en_passant: false, promotion_type: nil)
+  def initialize(orig, dest, board, en_passant: false, promotion_type: nil, history: nil)
+    @promotion_type = promotion_type
+    @history = history
+
+    return unless orig && dest && board
     @orig = orig
     @dest = dest
     @board = board
     @en_passant = en_passant
-
     @orig_y, @orig_x = @orig
     @dest_y, @dest_x = @dest
-
     @piece = @board[@orig_y][@orig_x]
-
     @piece_color, @piece_type = @piece.chars
-
-    @promotion_type = promotion_type
   end
 
   def log_move
@@ -30,7 +29,11 @@ class Logger
     capture = @board[@dest_y][@dest_x] || @en_passant ? 'x' : ''
     destination = NotationParser.encode_notation(@dest)
 
-    origin + capture + destination + promotion(@promotion_type) + check_or_mate
+    origin + capture + destination + check_or_mate
+  end
+
+  def log_promotion
+    @promotion_type ? "=(#{@promotion_type})" : ""
   end
 
   private
@@ -84,9 +87,5 @@ class Logger
     return '+' if check
     
     ""
-  end
-
-  def promotion(promotion_type)
-    ''
   end
 end

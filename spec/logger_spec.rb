@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require_relative '../lib/helpers/logger'
+require 'chessmate'
 
 describe 'Logger' do
   before :each do
@@ -161,11 +162,9 @@ describe 'Logger' do
     end
 
 		it 'should log pawn promotion' do
-			%w[rook knight bishop queen].each do |piece|
-				board = @specialty_moves_board.map(&:dup)
-				logger = Logger.new([1, 0], [0, 0], board)
-				piece_type = %w[rook bishop queen].include?(piece) ? piece[0].upcase : 'N'
-				expect(logger.log_move).to eql("a8=(#{piece_type})")
+			%w[R N B Q].each do |piece|
+				logger = Logger.new(nil, nil, nil, promotion_type: piece)
+				expect(logger.log_promotion).to eql("=(#{piece})")
 			end
     end
 	end

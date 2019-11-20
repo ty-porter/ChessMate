@@ -91,7 +91,7 @@ class ChessMate
 
     @promotable = dest if piece_type[1] == "P" && promote?(orig)
 
-    if !@ignore_logging && !@promotable
+    if !@ignore_logging
       logger = Logger.new(orig, dest, @board)
       @move_history << logger.log_move
     end
@@ -276,5 +276,10 @@ class ChessMate
     end
 
     @board[square_y][square_x] = old_piece[0] + piece_type
+
+    if !@ignore_logging
+      logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
+      @move_history[-1] += logger.log_promotion
+    end
   end
 end
