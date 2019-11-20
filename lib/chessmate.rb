@@ -11,19 +11,29 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
   require 'helpers/default'
+  require 'helpers/logger'
 
-  attr_reader :board, :turn, :in_check, :promotable, :en_passant, :castling, :allow_out_of_turn
+  attr_reader :board,
+              :turn,
+              :in_check,
+              :promotable,
+              :en_passant,
+              :castling,
+              :allow_out_of_turn,
+              :move_history
 
   def initialize(board: nil,
                  turn: nil,
-                 promotable: nil,
+                 promotable: false,
                  en_passant: nil,
                  castling: nil,
                  in_check: nil,
-                 allow_out_of_turn: nil)
+                 allow_out_of_turn: nil,
+                 move_history: nil,
+                 ignore_logging: false)
     @board = board || DEFAULT[:board].map(&:dup)
     @turn = turn || DEFAULT[:turn]
-    @promotable = promotable || DeepDup.deep_dup(DEFAULT[:promotable])
+    @promotable = promotable
     @en_passant = en_passant || DeepDup.deep_dup(DEFAULT[:en_passant])
     @castling = castling || DeepDup.deep_dup(DEFAULT[:castling])
     @in_check = in_check || DeepDup.deep_dup(DEFAULT[:in_check])
@@ -35,13 +45,13 @@ class ChessMate
                          else
                            false
                          end
+    @move_history = move_history || []
+    @ignore_logging = ignore_logging
   end
 
   def update(orig, dest = nil)
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece_type = @board[orig_y][orig_x]
     piece_color = piece_type[0] == 'W' ? :white : :black
     opposite_color = piece_type[0] == 'W' ? :black : :white
@@ -79,10 +89,16 @@ class ChessMate
       @board[orig_y][new_rook_x_position] = piece_type[0] + 'R'
     end
 
+    @promotable = dest if piece_type[1] == 'P' && promote?(orig)
+
+    unless @ignore_logging
+      logger = Logger.new(orig, dest, @board)
+      @move_history << logger.log_move
+    end
+
     @board[orig_y][orig_x] = nil
     @board[dest_y][dest_x] = piece_type
 
-    @promotable = dest if piece_type[1] == 'P' && promote?(dest)
     @in_check = in_check?
     @turn += 1
   end
@@ -159,10 +175,8 @@ class ChessMate
   def in_check_after_move?(orig, dest)
     test_board = @board.map(&:dup)
 
-    orig_y = orig[0]
-    orig_x = orig[1]
-    dest_y = dest[0]
-    dest_x = dest[1]
+    orig_y, orig_x = orig
+    dest_y, dest_x = dest
     piece = test_board[orig_y][orig_x]
     piece_type = test_board[orig_y][orig_x]
     opposite_color = piece_type[0] == 'W' ? :black : :white
@@ -236,8 +250,8 @@ class ChessMate
   def promote?(square)
     square_y = square[0]
     square_x = square[1]
-    piece = @board[square_y][square_x][0]
-    promote_column = piece.downcase == 'w' ? 0 : 7
+    piece_color = @board[square_y][square_x][0]
+    promote_column = piece_color.downcase == 'w' ? 1 : 6
     promote_column == square_y
   end
 
@@ -246,7 +260,7 @@ class ChessMate
     square_x = square[1]
 
     old_piece = @board[square_y][square_x]
-    return nil if old_piece.nil? || !promote?(square)
+    return nil if old_piece.nil? || @promotable != [square_y, square_x]
 
     case piece.downcase
     when 'rook'
@@ -262,5 +276,10 @@ class ChessMate
     end
 
     @board[square_y][square_x] = old_piece[0] + piece_type
+
+    return if @ignore_logging
+
+    logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
+    @move_history[-1] += logger.log_promotion
   end
 end

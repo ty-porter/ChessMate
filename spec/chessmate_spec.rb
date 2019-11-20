@@ -59,7 +59,7 @@ describe ChessMate do
         chess = ChessMate.new
         expect(chess.board).to eql(DEFAULT[:board])
         expect(chess.turn).to eql(DEFAULT[:turn])
-        expect(chess.promotable).to eql(DEFAULT[:promotable])
+        expect(chess.promotable).to eql(false)
         expect(chess.en_passant).to eql(DEFAULT[:en_passant])
         expect(chess.castling).to eql(DEFAULT[:castling])
         expect(chess.in_check).to eql(DEFAULT[:in_check])
@@ -1357,27 +1357,27 @@ describe ChessMate do
   end
 
   describe 'promote? method' do
-    it 'should return true if white piece is on last rank' do
+    it 'should return true if white piece is moving to last rank' do
       board = Array.new(8) { Array.new(8, nil) }
-      board[0][0] = 'WP'
+      board[1][0] = 'WP'
       chess = ChessMate.new(board: board)
-      expect(chess.promote?([0, 0])).to eql(true)
+      expect(chess.promote?([1, 0])).to eql(true)
     end
 
-    it 'should return true if black piece is on last rank' do
+    it 'should return true if black piece is moving to last rank' do
       board = Array.new(8) { Array.new(8, nil) }
-      board[7][0] = 'BP'
+      board[6][0] = 'BP'
       chess = ChessMate.new(board: board)
-      expect(chess.promote?([7, 0])).to eql(true)
+      expect(chess.promote?([6, 0])).to eql(true)
     end
 
     it 'should return false otherwise' do
       board = Array.new(8) { Array.new(8, nil) }
-      board[1][0] = 'WP'
-      board[6][0] = 'BP'
+      board[2][0] = 'WP'
+      board[5][0] = 'BP'
       chess = ChessMate.new(board: board)
-      expect(chess.promote?([1, 0])).to eql(false)
-      expect(chess.promote?([6, 0])).to eql(false)
+      expect(chess.promote?([2, 0])).to eql(false)
+      expect(chess.promote?([5, 0])).to eql(false)
     end
   end
 
@@ -1399,8 +1399,9 @@ describe ChessMate do
     context 'should promote to' do
       before :each do
         board = Array.new(8) { Array.new(8, nil) }
-        board[0][0] = 'WP'
+        board[1][0] = 'WP'
         @chess = ChessMate.new(board: board)
+        @chess.move('a7', 'a8')
       end
 
       it 'queen' do

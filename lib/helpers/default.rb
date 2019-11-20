@@ -12,7 +12,6 @@ DEFAULT = {
     %w[WR WN WB WQ WK WB WN WR]
   ],
   turn: 1,
-  promotable: nil,
   en_passant: { white: nil, black: nil },
   in_check: { white: false, black: false },
   castling: {
