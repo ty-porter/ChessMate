@@ -5,17 +5,6 @@ require_relative '../lib/helpers/logger'
 
 describe 'Logger' do
   before :each do
-    @odd_moves_board = [
-      [nil, nil, nil, 'BR', nil, nil, nil, 'BR'],
-      ['BB', nil, nil, nil, nil, nil, nil, nil],
-      [nil, nil, nil, 'BB', nil, nil, nil, nil],
-      ['WR', nil, nil, nil, nil, nil, nil, nil],
-      [nil, nil, nil, nil, 'WQ', nil, nil, 'WQ'],
-      [nil, nil, nil, nil, nil, nil, nil, nil],
-      [nil, nil, nil, nil, nil, nil, nil, nil],
-      ['WR', nil, nil, nil, nil, nil, nil, 'WQ']
-    ]
-
     @normal_moves_board = [
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -36,8 +25,20 @@ describe 'Logger' do
       [nil, 'BP', nil, 'BP', nil, nil, nil, nil],
       ['WP', 'WN', 'WB', 'WQ', 'WK', nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil]
+		]
+		
+		@ambiguous_moves_board = [
+      [nil, nil, nil, 'BR', nil, nil, nil, 'BR'],
+      ['BB', nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, 'BB', nil, nil, nil, nil],
+      ['WR', nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, 'WQ', nil, nil, 'WQ'],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      ['WR', nil, nil, nil, nil, nil, nil, 'WQ']
     ]
-  end
+	end
+	
   context 'pawn moves' do
     it 'should log normal pawn moves' do
       logger = Logger.new([6, 0], [5, 0], @normal_moves_board)
@@ -96,5 +97,27 @@ describe 'Logger' do
       logger = Logger.new([6, 4], [5, 3], @capture_moves_board)
       expect(logger.log_move).to eql('Kxd3')
     end
-  end
+	end
+	
+	context 'ambiguous moves' do
+		it 'should add file info to log moves with pieces in same file' do
+			logger = Logger.new([7, 0], [5, 0], @ambiguous_moves_board)
+			expect(logger.log_move).to eql('R1a3')
+		end
+
+		it 'should add rank info to log moves with pieces in same rank' do
+			logger = Logger.new([7, 0], [5, 0], @ambiguous_moves_board)
+			expect(logger.log_move).to eql('R1a3')
+		end
+
+		it 'should add file and rank info to log moves with multiple pieces in same file and rank' do
+			logger = Logger.new([4, 7], [7, 4], @ambiguous_moves_board)
+			expect(logger.log_move).to eql('Qh4e1')
+		end
+
+		it 'should handle knights/bishops/queens with ability to move to dest square' do
+			logger = Logger.new([2, 3], [0, 1], @ambiguous_moves_board)
+			expect(logger.log_move).to eql('Bdb8')
+		end
+	end
 end
