@@ -31,7 +31,7 @@ class Logger
 
   def encode_origin
     file = @board.each.map.with_index { |row, i| row[@orig_x] if i != @orig_y }
-    rank = @board[@orig_y].map.with_index { |col, i| col if i  != @orig_x }
+    rank = @board[@orig_y].map.with_index { |col, i| col if i != @orig_x }
 
     ambiguous_in_file = file.include?(@piece)
     ambiguous_in_rank = rank.include?(@piece)
@@ -61,18 +61,16 @@ class Logger
       end
     end
 
-    if notation_required.nil? || !notation_required.any?(true)
-      if @piece_type == "P" 
-        if ( @board[@dest_y][@dest_x] || @en_passant )
-          return NotationParser.encode_notation(@orig)[0]
-        else
-          return ''
-        end
+    if notation_required.nil? || notation_required.none?(true)
+      if @piece_type == 'P'
+        return NotationParser.encode_notation(@orig)[0] if @board[@dest_y][@dest_x] || @en_passant
+
+        return ''
       end
       return @piece_type
     end
     ambiguous_encoded = @piece_type
-    encoded_origin_chars  = NotationParser.encode_notation(@orig).chars
+    encoded_origin_chars = NotationParser.encode_notation(@orig).chars
     notation_required.each_with_index do |value, i|
       ambiguous_encoded += encoded_origin_chars[i] if value
     end
