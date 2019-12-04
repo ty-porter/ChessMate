@@ -59,7 +59,7 @@ describe ChessMate do
         chess = ChessMate.new
         expect(chess.board).to eql(DEFAULT[:board])
         expect(chess.turn).to eql(DEFAULT[:turn])
-        expect(chess.promotable).to eql(false)
+        expect(chess.promotable).to eql(nil)
         expect(chess.en_passant).to eql(DEFAULT[:en_passant])
         expect(chess.castling).to eql(DEFAULT[:castling])
         expect(chess.in_check).to eql(DEFAULT[:in_check])
@@ -354,6 +354,21 @@ describe ChessMate do
           %w[WR WN WB WQ WK WB WN WR]
         ]
       )
+    end
+
+    it 'should return false if there is a promotable pawn on the board' do
+      board = [
+        ['WP', nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil],
+        ['WP', nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil, nil]
+      ]
+      chess = ChessMate.new(board: board, promotable: [0, 0])
+      expect(chess.move('a2', 'a3')).to eql(false)
     end
 
     context 'for pawns' do
@@ -1422,6 +1437,25 @@ describe ChessMate do
       it 'rook' do
         @chess.promote!([0, 0], 'rook')
         expect(@chess.board[0][0]).to eql('WR')
+      end
+    end
+
+    context 'logging' do
+      it 'should correctly handle logging promotion' do
+        board = [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          ['WP', nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil]
+        ]
+        chess = ChessMate.new(board: board)
+        chess.move('a7', 'a8')
+        chess.promote!([0, 0], 'queen')
+        expect(chess.move_history[-1]).to eql('a8=(Q)')
       end
     end
   end
