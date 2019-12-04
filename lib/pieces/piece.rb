@@ -39,9 +39,6 @@ class Piece
       false
 
     end
-
-      nil
-
   end
 
   def self.capturable?(orig, dest, board)
