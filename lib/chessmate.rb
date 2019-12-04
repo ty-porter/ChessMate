@@ -24,7 +24,7 @@ class ChessMate
 
   def initialize(board: nil,
                  turn: nil,
-                 promotable: false,
+                 promotable: nil,
                  en_passant: nil,
                  castling: nil,
                  in_check: nil,
@@ -133,6 +133,8 @@ class ChessMate
   end
 
   def move(orig, dest, test = false, test_board = nil)
+    return false if @promotable
+
     orig_pos = NotationParser.parse_notation(orig)
     dest_pos = NotationParser.parse_notation(dest)
 
@@ -276,6 +278,7 @@ class ChessMate
     end
 
     @board[square_y][square_x] = old_piece[0] + piece_type
+    @promotable = nil
 
     return if @ignore_logging
 
