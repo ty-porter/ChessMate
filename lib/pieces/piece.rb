@@ -12,7 +12,8 @@ class Piece
         test_pos = orig_x - (x * direction) - direction
         return true unless board[orig_y][test_pos].nil?
       end
-      return false
+      
+      false
 
     elsif orig_x == dest_x
 
@@ -22,7 +23,7 @@ class Piece
         return true unless board[test_pos][orig_x].nil?
       end
 
-      return false
+      false
 
     elsif (orig_y - dest_y).abs == (orig_x - dest_x).abs
 
@@ -35,10 +36,10 @@ class Piece
         return true unless board[test_y_pos][test_x_pos].nil?
       end
 
-      return false
+      false
 
     else
-      return nil
+      nil
     end
   end
 
