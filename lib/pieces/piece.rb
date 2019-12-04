@@ -12,7 +12,7 @@ class Piece
         test_pos = orig_x - (x * direction) - direction
         return true unless board[orig_y][test_pos].nil?
       end
-      
+
       false
 
     elsif orig_x == dest_x
@@ -38,9 +38,10 @@ class Piece
 
       false
 
-    else
-      nil
     end
+
+      nil
+
   end
 
   def self.capturable?(orig, dest, board)
