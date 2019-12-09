@@ -11,7 +11,7 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
   require 'helpers/default'
-  require 'helpers/logger'
+  require 'helpers/chess_logger'
 
   attr_reader :board,
               :turn,
@@ -92,7 +92,7 @@ class ChessMate
     @promotable = dest if piece_type[1] == 'P' && promote?(orig)
 
     unless @ignore_logging
-      logger = Logger.new(orig, dest, @board)
+      logger = ChessLogger.new(orig, dest, @board)
       @move_history << logger.log_move
     end
 
@@ -282,7 +282,7 @@ class ChessMate
 
     return if @ignore_logging
 
-    logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
+    logger = ChessLogger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
     @move_history[-1] += logger.log_promotion
   end
 end
