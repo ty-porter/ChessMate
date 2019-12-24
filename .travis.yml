@@ -6,6 +6,7 @@ before_install:
  - gem i rubocop
  - gem i rspec
  - gem i deep_dup
+ - gem i coveralls
 
 script: 
  - rspec && rubocop

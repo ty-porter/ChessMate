@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'chessmate'
-  s.version     = '0.8.1'
+  s.version     = '0.8.2'
   s.date        = '2019-10-21'
   s.summary     = 'Chess for Rails'
   s.description = 'A simple chess move validator'
@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.email       = 'tyler.b.porter@gmail.com'
   s.files       = Dir['**/*'].keep_if { |file| !file.match('gem') && File.file?(file) }
 
+  s.add_development_dependency 'coveralls', '>= 0.8.23'
   s.add_development_dependency 'pry', '~> 0'
   s.add_development_dependency 'rspec', '~> 0'
   s.add_development_dependency 'rubocop', '0.75.1'
