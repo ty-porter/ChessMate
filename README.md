@@ -3,14 +3,17 @@
 </p>
 <h2 align="center">A dead-simple chess validation gem for Rails</h2>
 <p align="center">
+  <a href="https://rubygems.org/gems/chessmate">
+    <img src="https://img.shields.io/gem/v/chessmate">
+  </a>
   <a href="https://travis-ci.com/pawptart/ChessMate">
     <img src="https://travis-ci.com/pawptart/ChessMate.svg?branch=master">
   </a>
+  <a href='https://coveralls.io/github/pawptart/ChessMate?branch=coveralls'>
+    <img src='https://coveralls.io/repos/github/pawptart/ChessMate/badge.svg?branch=coveralls' alt='Coverage Status' />
+  </a>
   <a href="https://github.com/pawptart/ChessMate/issues">
     <img src="https://img.shields.io/github/issues/pawptart/chessmate">
-  </a>
-  <a href="https://rubygems.org/gems/chessmate">
-    <img src="https://img.shields.io/gem/v/chessmate">
   </a>
 </p>
 
