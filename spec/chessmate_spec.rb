@@ -4,7 +4,7 @@ require 'spec_helper'
 require_relative '../lib/chessmate'
 require_relative '../lib/helpers/notation_parser'
 require_relative '../lib/helpers/default'
-Dir['../lib/pieces/*.rb'].each { |file| require file }
+Dir['../lib/pieces/*.rb'].sort.each { |file| require file }
 
 describe ChessMate do
   describe 'initialize method' do
