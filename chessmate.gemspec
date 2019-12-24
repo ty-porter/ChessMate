@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry', '~> 0'
   s.add_development_dependency 'rspec', '~> 0'
   s.add_development_dependency 'rubocop', '>= 0.49.0'
+  s.add_development_dependency 'coveralls', '>= 0.8.23'
 
   s.add_dependency 'deep_dup', '~> 0'
 
