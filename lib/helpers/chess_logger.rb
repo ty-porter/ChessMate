@@ -3,7 +3,7 @@
 require 'helpers/notation_parser'
 require 'chessmate'
 
-class Logger
+class ChessLogger
   def initialize(orig, dest, board, en_passant: false, promotion_type: nil, history: nil)
     @promotion_type = promotion_type
     @history = history

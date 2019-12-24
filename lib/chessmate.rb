@@ -11,7 +11,7 @@ class ChessMate
   require 'pieces/queen'
   require 'pieces/king'
   require 'helpers/default'
-  require 'helpers/logger'
+  require 'helpers/chess_logger'
 
   attr_reader :board,
               :turn,
@@ -24,7 +24,7 @@ class ChessMate
 
   def initialize(board: nil,
                  turn: nil,
-                 promotable: false,
+                 promotable: nil,
                  en_passant: nil,
                  castling: nil,
                  in_check: nil,
@@ -92,7 +92,7 @@ class ChessMate
     @promotable = dest if piece_type[1] == 'P' && promote?(orig)
 
     unless @ignore_logging
-      logger = Logger.new(orig, dest, @board)
+      logger = ChessLogger.new(orig, dest, @board)
       @move_history << logger.log_move
     end
 
@@ -133,6 +133,8 @@ class ChessMate
   end
 
   def move(orig, dest, test = false, test_board = nil)
+    return false if @promotable
+
     orig_pos = NotationParser.parse_notation(orig)
     dest_pos = NotationParser.parse_notation(dest)
 
@@ -276,10 +278,11 @@ class ChessMate
     end
 
     @board[square_y][square_x] = old_piece[0] + piece_type
+    @promotable = nil
 
     return if @ignore_logging
 
-    logger = Logger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
+    logger = ChessLogger.new(nil, nil, nil, promotion_type: piece_type, history: @move_history)
     @move_history[-1] += logger.log_promotion
   end
 end
