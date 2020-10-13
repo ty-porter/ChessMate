@@ -73,7 +73,7 @@ class ChessLogger
   end
 
   def check_or_mate
-    game = ChessMate.new(board: @board, ignore_logging: true)
+    game = ChessMate.new(board: @board, ignore_logging: true, allow_out_of_turn: true)
     encoded_orig = NotationParser.encode_notation(@orig)
     encoded_dest = NotationParser.encode_notation(@dest)
     opposite_color_letter = @piece_color == 'W' ? 'B' : 'W'
