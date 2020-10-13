@@ -3,10 +3,8 @@ rvm:
  - 2.5
 
 before_install:
- - gem i rubocop
- - gem i rspec
- - gem i deep_dup
- - gem i coveralls
+ - bundle install
 
 script: 
- - rspec && rubocop
+ - bundle exec rubocop
+ - bundle exec rspec
