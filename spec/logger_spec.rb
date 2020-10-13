@@ -50,7 +50,7 @@ describe 'ChessLogger' do
       ['WR', nil, nil, nil, 'WK', nil, nil, 'WR']
     ]
 
-    @check_board = [
+    @white_check_board = [
       [nil, nil, nil, 'BQ', nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -59,6 +59,17 @@ describe 'ChessLogger' do
       ['BN', nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, 'WP', nil, 'WP', nil, nil],
       [nil, nil, nil, 'WR', 'WK', 'WR', nil, nil]
+    ]
+
+    @black_check_board = [
+      [nil, nil, nil, 'WQ', nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      ['WN', nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, 'BP', nil, 'BP', nil, nil],
+      [nil, nil, nil, 'BR', 'BK', 'BR', nil, nil]
     ]
   end
 
@@ -169,14 +180,28 @@ describe 'ChessLogger' do
   end
 
   context 'game status indications' do
-    it 'should log check' do
-      logger = ChessLogger.new([5, 0], [6, 2], @check_board)
-      expect(logger.log_move).to eql('Nc2+')
+    context 'for white' do
+      it 'should log check' do
+        logger = ChessLogger.new([5, 0], [6, 2], @white_check_board)
+        expect(logger.log_move).to eql('Nc2+')
+      end
+
+      it 'should log checkmate' do
+        logger = ChessLogger.new([0, 3], [0, 4], @white_check_board)
+        expect(logger.log_move).to eql('Qe8#')
+      end
     end
 
-    it 'should log checkmate' do
-      logger = ChessLogger.new([0, 3], [0, 4], @check_board)
-      expect(logger.log_move).to eql('Qe8#')
+    context 'for black' do
+      it 'should log check' do
+        logger = ChessLogger.new([5, 0], [6, 2], @black_check_board)
+        expect(logger.log_move).to eql('Nc2+')
+      end
+
+      it 'should log checkmate' do
+        logger = ChessLogger.new([0, 3], [0, 4], @black_check_board)
+        expect(logger.log_move).to eql('Qe8#')
+      end
     end
   end
 end

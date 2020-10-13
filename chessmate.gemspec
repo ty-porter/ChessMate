@@ -2,13 +2,14 @@
 
 Gem::Specification.new do |s|
   s.name        = 'chessmate'
-  s.version     = '0.8.2'
+  s.version     = '0.8.3'
   s.date        = '2019-10-21'
   s.summary     = 'Chess for Rails'
   s.description = 'A simple chess move validator'
   s.authors     = ['Tyler Porter']
   s.email       = 'tyler.b.porter@gmail.com'
   s.files       = Dir['**/*'].keep_if { |file| !file.match('gem') && File.file?(file) }
+  s.required_ruby_version = '>= 2.5.8'
 
   s.add_development_dependency 'coveralls', '>= 0.8.23'
   s.add_development_dependency 'pry', '~> 0'

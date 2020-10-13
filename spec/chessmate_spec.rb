@@ -1457,6 +1457,40 @@ describe ChessMate do
         chess.promote!([0, 0], 'queen')
         expect(chess.move_history[-1]).to eql('a8=(Q)')
       end
+
+      context 'check moves' do
+        it 'logs checks against black' do
+          board = [
+            [nil, nil, nil, 'WQ', nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            ['WN', nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, 'BP', nil, 'BP', nil, nil],
+            [nil, nil, nil, 'BR', 'BK', 'BR', nil, nil]
+          ]
+          chess = ChessMate.new(board: board)
+          chess.move('a3', 'c2')
+          expect(chess.move_history.last).to eql('Nc2+')
+        end
+
+        it 'logs checks against white' do
+          board = [
+            [nil, nil, nil, 'BQ', nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, nil, nil, nil, nil, nil],
+            ['BN', nil, nil, nil, nil, nil, nil, nil],
+            [nil, nil, nil, 'WP', nil, 'WP', nil, nil],
+            [nil, nil, nil, 'WR', 'WK', 'WR', nil, nil]
+          ]
+          chess = ChessMate.new(board: board)
+          chess.move('a3', 'c2')
+          expect(chess.move_history.last).to eql('Nc2+')
+        end
+      end
     end
   end
 
